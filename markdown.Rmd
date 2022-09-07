@@ -1,0 +1,323 @@
+---
+title: "Untitled"
+author: "Jan de Wit"
+date: "2/23/2022"
+output: word_document
+---
+
+```{r setup, include=TRUE}
+rm(list = ls()) #Clear workspace
+knitr::opts_chunk$set(echo = TRUE)
+
+# Disable output of warnings to the generated doc file
+# Set to FALSE for final doc, TRUE for debugging
+knitr::opts_chunk$set(warning = TRUE)
+
+##### Load packages
+
+# For importing SPSS files
+library(foreign)
+
+# For filtering
+library(dplyr)
+
+# For calculating number of days between two dates
+library(lubridate)
+
+
+##### Load dataset of all waves (not included on Github) and remove missing values
+
+##### Wave 1
+data_wave1_in <- read.spss('L_CoronaMelder_wave1_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
+# Filter out the respondents that did not complete the entire survey 
+data_wave1 <- data_wave1_in[!is.na(data_wave1_in$duur),]
+data_wave1['wave'] <- 1
+
+##### Wave 2
+data_wave2_in <- read.spss('L_Corona_app_wave2_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
+# Filter out the respondents that did not complete the entire survey 
+data_wave2 <- data_wave2_in[!is.na(data_wave2_in$duur),]
+data_wave2['wave'] <- 2
+
+##### Wave 3
+data_wave3_in <- read.spss('L_Corona_app_wave3_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
+# Filter out the respondents that did not complete the entire survey 
+data_wave3 <- data_wave3_in[!is.na(data_wave3_in$duur),]
+data_wave3['wave'] <- 3
+
+##### Wave 4
+data_wave4_in <- read.spss('L_Corona_app_wave4_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
+# Filter out the respondents that did not complete the entire survey 
+data_wave4 <- data_wave4_in[!is.na(data_wave4_in$duur),]
+data_wave4['wave'] <- 4
+
+##### Wave 5
+data_wave5_in <- read.spss('L_Corona_app_wave5_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
+# Filter out the respondents that did not complete the entire survey 
+data_wave5 <- data_wave5_in[!is.na(data_wave5_in$duur),]
+data_wave5['wave'] <- 5
+
+##### Wave 6
+data_wave6_in <- read.spss('L_Corona_app_wave6_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
+# Filter out the respondents that did not complete the entire survey 
+data_wave6 <- data_wave6_in[!is.na(data_wave6_in$duur),]
+data_wave6['wave'] <- 6
+
+# Remove columns that are not present in all waves
+data_wave1 <- data_wave1[, intersect(colnames(data_wave1), colnames(data_wave2))]
+data_wave1 <- data_wave1[, intersect(colnames(data_wave1), colnames(data_wave3))]
+data_wave1 <- data_wave1[, intersect(colnames(data_wave1), colnames(data_wave4))]
+data_wave1 <- data_wave1[, intersect(colnames(data_wave1), colnames(data_wave5))]
+data_wave1 <- data_wave1[, intersect(colnames(data_wave1), colnames(data_wave6))]
+
+data_wave2 <- data_wave2[, intersect(colnames(data_wave2), colnames(data_wave1))]
+data_wave3 <- data_wave3[, intersect(colnames(data_wave3), colnames(data_wave1))]
+data_wave4 <- data_wave4[, intersect(colnames(data_wave4), colnames(data_wave1))]
+data_wave5 <- data_wave5[, intersect(colnames(data_wave5), colnames(data_wave1))]
+data_wave6 <- data_wave6[, intersect(colnames(data_wave6), colnames(data_wave1))]
+
+# Remove respondents from wave 5 and 6 that did not participate in waves 2-4
+data_wave5 = data_wave5[(data_wave5$nomem_encr %in% data_wave4$nomem_encr),]
+data_wave6 = data_wave6[(data_wave6$nomem_encr %in% data_wave5$nomem_encr),]
+
+
+# Make a long table with all rows with respondents, their start time (start using), and event time (stop using), if applicable, otherwise right censored
+
+# In wave 1, people who have used but already stopped have stopped within the first few weeks that the app was available. We therefore set start time to 0 and event to 1 (month)
+# Use months instead of waves because they are not equally spaced
+# use %in% to find those that were not using last wave
+data_wave1['event'] <- 0
+data_wave1['month'] <- 1
+
+data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+
+data_complete <- data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]
+data_complete <- rbind(data_complete, data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",])
+
+
+# === WAVE 2 ===
+data_wave2['event'] <- 0
+data_wave2['month'] <- 1
+
+data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+
+# People that stopped
+data_new_wave2 <- filter(data_wave2, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# Ongoing users
+data_new_wave2 <- rbind(data_new_wave2, filter(data_wave2, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+for (row in 1:nrow(data_new_wave2)) {
+  # Like with wave 1, also in later waves it is possible that someone started using and stopped again, even within one wave
+  # This checks for that situation, and puts month to 1 if it is the case
+  if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$DatumE))) {
+    data_new_wave2[row, "month"] <- 1
+  } else {
+    first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$wave)
+    date_current <- as.Date(data_new_wave2[row, "DatumE"], "%d-%m-%Y")
+    date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave2[row, "nomem_encr"])$DatumE, "%d-%m-%Y")
+    
+    days <- interval(date_start, date_current) %/% days(1)
+    data_new_wave2[row, "month"] <- round(days / 30) + 1
+    
+  }
+}
+
+# Newly started
+data_new_wave2 <- rbind(data_new_wave2, filter(data_wave2, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+data_complete <- rbind(data_complete, data_new_wave2)
+
+
+# === WAVE 3 ===
+data_wave3['event'] <- 0
+data_wave3['month'] <- 1
+
+data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+
+# People that stopped
+data_new_wave3 <- filter(data_wave3, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# Ongoing users
+data_new_wave3 <- rbind(data_new_wave3, filter(data_wave3, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+for (row in 1:nrow(data_new_wave3)) {
+  # Like with wave 1, also in later waves it is possible that someone started using and stopped again, even within one wave
+  # This checks for that situation, and puts month to 1 if it is the case
+  if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave3[row, "nomem_encr"],]$DatumE))) {
+    data_new_wave3[row, "month"] <- 1
+  } else {
+    
+    first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave3[row, "nomem_encr"],]$wave)
+    date_current <- as.Date(data_new_wave3[row, "DatumE"], "%d-%m-%Y")
+    date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave3[row, "nomem_encr"])$DatumE, "%d-%m-%Y")
+    
+    days <- interval(date_start, date_current) %/% days(1)
+    data_new_wave3[row, "month"] <- round(days / 30) + 1
+  }
+}
+
+# Newly started
+data_new_wave3 <- rbind(data_new_wave3, filter(data_wave3, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+data_complete <- rbind(data_complete, data_new_wave3)
+
+
+
+# === WAVE 4 ===
+data_wave4['event'] <- 0
+data_wave4['month'] <- 1
+
+data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+
+# People that stopped
+data_new_wave4 <- filter(data_wave4, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# Ongoing users
+data_new_wave4 <- rbind(data_new_wave4, filter(data_wave4, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+for (row in 1:nrow(data_new_wave4)) {
+  # Like with wave 1, also in later waves it is possible that someone started using and stopped again, even within one wave
+  # This checks for that situation, and puts month to 1 if it is the case
+  if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave4[row, "nomem_encr"],]$DatumE))) {
+    data_new_wave4[row, "month"] <- 1
+  } else {
+    
+    first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave4[row, "nomem_encr"],]$wave)
+    date_current <- as.Date(data_new_wave4[row, "DatumE"], "%d-%m-%Y")
+    date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave4[row, "nomem_encr"])$DatumE, "%d-%m-%Y")
+    
+    days <- interval(date_start, date_current) %/% days(1)
+    data_new_wave4[row, "month"] <- round(days / 30) + 1
+  }
+}
+
+# Newly started
+data_new_wave4 <- rbind(data_new_wave4, filter(data_wave4, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+data_complete <- rbind(data_complete, data_new_wave4)
+
+
+
+# === WAVE 5 ===
+data_wave5['event'] <- 0
+data_wave5['month'] <- 1
+
+data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+
+# People that stopped
+data_new_wave5 <- filter(data_wave5, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# Ongoing users
+data_new_wave5 <- rbind(data_new_wave5, filter(data_wave5, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+for (row in 1:nrow(data_new_wave5)) {
+  # Like with wave 1, also in later waves it is possible that someone started using and stopped again, even within one wave
+  # This checks for that situation, and puts month to 1 if it is the case
+  if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave5[row, "nomem_encr"],]$DatumE))) {
+    data_new_wave5[row, "month"] <- 1
+  } else {
+    
+    first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave5[row, "nomem_encr"],]$wave)
+    
+    # For some reason the date format in waves 5 and 6 are different
+    date_current <- as.Date(data_new_wave5[row, "DatumE"], "%Y-%m-%d")
+    
+    # Now we need to check the date format, because the starting wave could be 1-4 (old format) or 5-6 (new format)
+    if(unlist(gregexpr('-', filter(data_complete, wave == first_wave & nomem_encr == data_new_wave5[row, "nomem_encr"])$DatumE))[1] == 3) {
+      date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave5[row, "nomem_encr"])$DatumE, "%d-%m-%Y")
+      
+    } else {
+      date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave5[row, "nomem_encr"])$DatumE, "%Y-%m-%d")
+    }
+    
+    days <- interval(date_start, date_current) %/% days(1)
+    data_new_wave5[row, "month"] <- round(days / 30) + 1
+  }
+}
+
+# Newly started
+data_new_wave5 <- rbind(data_new_wave5, filter(data_wave5, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+data_complete <- rbind(data_complete, data_new_wave5)
+
+
+# === WAVE 6 ===
+data_wave6['event'] <- 0
+data_wave6['month'] <- 1
+
+data_wave6[data_wave6$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+
+# People that stopped
+data_new_wave6 <- filter(data_wave6, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# Ongoing users
+data_new_wave6 <- rbind(data_new_wave6, filter(data_wave6, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+for (row in 1:nrow(data_new_wave6)) {
+  # Like with wave 1, also in later waves it is possible that someone started using and stopped again, even within one wave
+  # This checks for that situation, and puts month to 1 if it is the case
+  if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave6[row, "nomem_encr"],]$DatumE))) {
+    data_new_wave6[row, "month"] <- 1
+  } else {
+    
+    first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave6[row, "nomem_encr"],]$wave)
+    
+    
+    # For some reason the date format in waves 5 and 6 are different
+    date_current <- as.Date(data_new_wave6[row, "DatumE"], "%Y-%m-%d")
+    
+    # Now we need to check the date format, because the starting wave could be 1-4 (old format) or 5-6 (new format)
+    if(unlist(gregexpr('-', filter(data_complete, wave == first_wave & nomem_encr == data_new_wave6[row, "nomem_encr"])$DatumE))[1] == 3) {
+      date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave6[row, "nomem_encr"])$DatumE, "%d-%m-%Y")
+      
+    } else {
+      date_start <- as.Date(filter(data_complete, wave == first_wave & nomem_encr == data_new_wave6[row, "nomem_encr"])$DatumE, "%Y-%m-%d")
+    }
+    
+    days <- interval(date_start, date_current) %/% days(1)
+    data_new_wave6[row, "month"] <- round(days / 30) + 1
+  }
+}
+
+# Newly started
+data_new_wave6 <- rbind(data_new_wave6, filter(data_wave6, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+data_complete <- rbind(data_complete, data_new_wave6)
+
+#test <- data_wave6[data_wave6$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]
+
+tmp <- data_complete[, c("nomem_encr", "month", "wave", "event", "DatumE")]
+
+# data_wave1_in$stopped_wave = 1
+# data_wave2_in$stopped_wave = 2
+# data_wave3_in$stopped_wave = 3
+# data_wave4_in$stopped_wave = 4
+# data_wave5_in$stopped_wave = 5
+# data_wave6_in$stopped_wave = 6
+# 
+# test <- data_wave1_in[data_wave1_in$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",c("nomem_encr", "Awareness", "stopped_wave")]
+# 
+# test = setDT(test)
+# 
+# test <- rbind(test, data_wave2_in[data_wave2_in$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",c("nomem_encr", "Awareness", "stopped_wave")])
+# 
+# test <- rbind(test, data_wave3_in[data_wave3_in$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",c("nomem_encr", "Awareness", "stopped_wave")])
+# 
+# test <- rbind(test, data_wave4_in[data_wave4_in$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",c("nomem_encr", "Awareness", "stopped_wave")])
+# 
+# test <- rbind(test, data_wave5_in[data_wave5_in$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",c("nomem_encr", "Awareness", "stopped_wave")])
+# 
+# test <- rbind(test, data_wave6_in[data_wave6_in$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",c("nomem_encr", "Awareness", "stopped_wave")])
+# 
+# setkey(test, nomem_encr)
+# test <- unique(test, by="nomem_encr")
+# 
+# test <- na.omit(test)
+# 
+# n <- test[test$stopped_wave == 6]
+
+ ```
+```{=openxml}
+<w:p><w:r><w:br w:type="page"/></w:r></w:p>
+```
