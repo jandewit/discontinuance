@@ -21,6 +21,9 @@ library(foreign)
 # For filtering
 library(dplyr)
 
+# For %>% pipe
+library(magrittr)
+
 # For calculating number of days between two dates
 library(lubridate)
 
@@ -81,6 +84,18 @@ data_wave5 = data_wave5[(data_wave5$nomem_encr %in% data_wave4$nomem_encr),]
 data_wave6 = data_wave6[(data_wave6$nomem_encr %in% data_wave5$nomem_encr),]
 
 
+# Some tests to identify respondents who said they never used the CoronaMelder even though in other waves they did report using it
+test2 <- filter(data_wave2, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr))
+
+test3 <- filter(data_wave3, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr))
+
+test4 <- filter(data_wave4, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr))
+
+test5 <- filter(data_wave5, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr))
+
+test6 <- filter(data_wave6, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr))
+
+
 # Make a long table with all rows with respondents, their start time (start using), and event time (stop using), if applicable, otherwise right censored
 
 # In wave 1, people who have used but already stopped have stopped within the first few weeks that the app was available. We therefore set start time to 0 and event to 1 (month)
@@ -90,6 +105,7 @@ data_wave1['event'] <- 0
 data_wave1['month'] <- 1
 
 data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
 data_complete <- data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]
 data_complete <- rbind(data_complete, data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",])
@@ -100,9 +116,13 @@ data_wave2['event'] <- 0
 data_wave2['month'] <- 1
 
 data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
 # People that stopped
 data_new_wave2 <- filter(data_wave2, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# More people that stopped (but indicated that they never used it)
+data_new_wave2 <- rbind(data_new_wave2, filter(data_wave2, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
 # Ongoing users
 data_new_wave2 <- rbind(data_new_wave2, filter(data_wave2, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
@@ -126,7 +146,9 @@ for (row in 1:nrow(data_new_wave2)) {
 # Newly started
 data_new_wave2 <- rbind(data_new_wave2, filter(data_wave2, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
-data_complete <- rbind(data_complete, data_new_wave2)
+#b <- filter(data_new_wave2, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
+
+data_complete <- rbind(data_complete, filter(data_new_wave2, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
 
 
 # === WAVE 3 ===
@@ -134,9 +156,13 @@ data_wave3['event'] <- 0
 data_wave3['month'] <- 1
 
 data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
 # People that stopped
 data_new_wave3 <- filter(data_wave3, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# More people that stopped (but indicated that they never used it)
+data_new_wave3 <- rbind(data_new_wave3, filter(data_wave3, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
 # Ongoing users
 data_new_wave3 <- rbind(data_new_wave3, filter(data_wave3, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
@@ -160,7 +186,9 @@ for (row in 1:nrow(data_new_wave3)) {
 # Newly started
 data_new_wave3 <- rbind(data_new_wave3, filter(data_wave3, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
-data_complete <- rbind(data_complete, data_new_wave3)
+#b <- filter(data_new_wave3, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
+
+data_complete <- rbind(data_complete, filter(data_new_wave3, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
 
 
 
@@ -169,9 +197,13 @@ data_wave4['event'] <- 0
 data_wave4['month'] <- 1
 
 data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
 # People that stopped
 data_new_wave4 <- filter(data_wave4, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# More people that stopped (but indicated that they never used it)
+data_new_wave4 <- rbind(data_new_wave4, filter(data_wave4, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
 # Ongoing users
 data_new_wave4 <- rbind(data_new_wave4, filter(data_wave4, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
@@ -195,7 +227,10 @@ for (row in 1:nrow(data_new_wave4)) {
 # Newly started
 data_new_wave4 <- rbind(data_new_wave4, filter(data_wave4, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
-data_complete <- rbind(data_complete, data_new_wave4)
+#b <- filter(data_new_wave4, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
+
+data_complete <- rbind(data_complete, filter(data_new_wave4, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
+
 
 
 
@@ -204,9 +239,13 @@ data_wave5['event'] <- 0
 data_wave5['month'] <- 1
 
 data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
 # People that stopped
 data_new_wave5 <- filter(data_wave5, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# More people that stopped (but indicated that they never used it)
+data_new_wave5 <- rbind(data_new_wave5, filter(data_wave5, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
 # Ongoing users
 data_new_wave5 <- rbind(data_new_wave5, filter(data_wave5, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
@@ -239,7 +278,9 @@ for (row in 1:nrow(data_new_wave5)) {
 # Newly started
 data_new_wave5 <- rbind(data_new_wave5, filter(data_wave5, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
-data_complete <- rbind(data_complete, data_new_wave5)
+# b <- filter(data_new_wave5, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
+
+data_complete <- rbind(data_complete, filter(data_new_wave5, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
 
 
 # === WAVE 6 ===
@@ -247,9 +288,13 @@ data_wave6['event'] <- 0
 data_wave6['month'] <- 1
 
 data_wave6[data_wave6$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
+data_wave6[data_wave6$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
 # People that stopped
 data_new_wave6 <- filter(data_wave6, Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer" & !(nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]$nomem_encr))
+
+# More people that stopped (but indicated that they never used it)
+data_new_wave6 <- rbind(data_new_wave6, filter(data_wave6, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt" & (nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
 # Ongoing users
 data_new_wave6 <- rbind(data_new_wave6, filter(data_wave6, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & (nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
@@ -283,11 +328,28 @@ for (row in 1:nrow(data_new_wave6)) {
 # Newly started
 data_new_wave6 <- rbind(data_new_wave6, filter(data_wave6, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
-data_complete <- rbind(data_complete, data_new_wave6)
+#b <- filter(data_new_wave6, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
+
+data_complete <- rbind(data_complete, filter(data_new_wave6, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
 
 #test <- data_wave6[data_wave6$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]
 
+# Some useful tests for analyses
 tmp <- data_complete[, c("nomem_encr", "month", "wave", "event", "DatumE")]
+num_respondents <- unique(data_complete$nomem_encr)
+
+num_rightcensored <- data_complete[, c('nomem_encr', 'event')]
+num_rightcensored <- num_rightcensored %>% group_by(nomem_encr) %>% filter(event == max(event))
+num_rightcensored <- unique(num_rightcensored, by = "nomem_encr")
+num_rightcensored <- num_rightcensored[num_rightcensored$event == 0,] # right censored respondents
+
+for (row in 1:nrow(num_rightcensored)) {
+  num_rightcensored[row, "last_wave"] <- max(data_complete[data_complete$nomem_encr == num_rightcensored[row, "nomem_encr"]$nomem_encr,]$wave)
+}
+
+num_rightcensored_endstudy <- num_rightcensored[num_rightcensored$last_wave != 6,]
+
+  #filter(data_complete, event == 0 & )
 
 # data_wave1_in$stopped_wave = 1
 # data_wave2_in$stopped_wave = 2
