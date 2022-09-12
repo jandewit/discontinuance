@@ -115,6 +115,8 @@ data_complete <- rbind(data_complete, data_wave1[data_wave1$Behavior_UTAUT == "I
 data_wave2['event'] <- 0
 data_wave2['month'] <- 1
 
+count_newusers2 = 0
+
 data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
 data_wave2[data_wave2$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
 
@@ -132,6 +134,7 @@ for (row in 1:nrow(data_new_wave2)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$DatumE))) {
     data_new_wave2[row, "month"] <- 1
+    count_newusers2 = count_newusers2 + 1
   } else {
     first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$wave)
     date_current <- as.Date(data_new_wave2[row, "DatumE"], "%d-%m-%Y")
@@ -146,6 +149,8 @@ for (row in 1:nrow(data_new_wave2)) {
 # Newly started
 data_new_wave2 <- rbind(data_new_wave2, filter(data_wave2, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
+count_newusers2 = count_newusers2 + nrow(filter(data_wave2, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave1[data_wave1$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
 #b <- filter(data_new_wave2, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
 
 data_complete <- rbind(data_complete, filter(data_new_wave2, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
@@ -154,6 +159,8 @@ data_complete <- rbind(data_complete, filter(data_new_wave2, !(nomem_encr %in% d
 # === WAVE 3 ===
 data_wave3['event'] <- 0
 data_wave3['month'] <- 1
+
+count_newusers3 = 0
 
 data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
 data_wave3[data_wave3$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
@@ -172,6 +179,7 @@ for (row in 1:nrow(data_new_wave3)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave3[row, "nomem_encr"],]$DatumE))) {
     data_new_wave3[row, "month"] <- 1
+    count_newusers3 = count_newusers3 + 1
   } else {
     
     first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave3[row, "nomem_encr"],]$wave)
@@ -186,6 +194,8 @@ for (row in 1:nrow(data_new_wave3)) {
 # Newly started
 data_new_wave3 <- rbind(data_new_wave3, filter(data_wave3, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
+count_newusers3 = count_newusers3 + nrow(filter(data_wave3, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave2[data_wave2$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
 #b <- filter(data_new_wave3, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
 
 data_complete <- rbind(data_complete, filter(data_new_wave3, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
@@ -195,6 +205,8 @@ data_complete <- rbind(data_complete, filter(data_new_wave3, !(nomem_encr %in% d
 # === WAVE 4 ===
 data_wave4['event'] <- 0
 data_wave4['month'] <- 1
+
+count_newusers4 = 0
 
 data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
 data_wave4[data_wave4$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
@@ -213,6 +225,7 @@ for (row in 1:nrow(data_new_wave4)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave4[row, "nomem_encr"],]$DatumE))) {
     data_new_wave4[row, "month"] <- 1
+    count_newusers4 = count_newusers4 + 1
   } else {
     
     first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave4[row, "nomem_encr"],]$wave)
@@ -227,6 +240,8 @@ for (row in 1:nrow(data_new_wave4)) {
 # Newly started
 data_new_wave4 <- rbind(data_new_wave4, filter(data_wave4, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
+count_newusers4 = count_newusers4 + nrow(filter(data_wave4, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave3[data_wave3$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
 #b <- filter(data_new_wave4, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
 
 data_complete <- rbind(data_complete, filter(data_new_wave4, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
@@ -237,6 +252,8 @@ data_complete <- rbind(data_complete, filter(data_new_wave4, !(nomem_encr %in% d
 # === WAVE 5 ===
 data_wave5['event'] <- 0
 data_wave5['month'] <- 1
+
+count_newusers5 = 0
 
 data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
 data_wave5[data_wave5$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
@@ -255,6 +272,7 @@ for (row in 1:nrow(data_new_wave5)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave5[row, "nomem_encr"],]$DatumE))) {
     data_new_wave5[row, "month"] <- 1
+    count_newusers5 = count_newusers5 + 1
   } else {
     
     first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave5[row, "nomem_encr"],]$wave)
@@ -278,7 +296,9 @@ for (row in 1:nrow(data_new_wave5)) {
 # Newly started
 data_new_wave5 <- rbind(data_new_wave5, filter(data_wave5, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
-# b <- filter(data_new_wave5, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
+count_newusers5 = count_newusers5 + nrow(filter(data_wave5, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave4[data_wave4$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+#b <- filter(data_new_wave5, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
 
 data_complete <- rbind(data_complete, filter(data_new_wave5, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
 
@@ -286,6 +306,8 @@ data_complete <- rbind(data_complete, filter(data_new_wave5, !(nomem_encr %in% d
 # === WAVE 6 ===
 data_wave6['event'] <- 0
 data_wave6['month'] <- 1
+
+count_newusers6 = 0
 
 data_wave6[data_wave6$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
 data_wave6[data_wave6$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
@@ -304,6 +326,7 @@ for (row in 1:nrow(data_new_wave6)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave6[row, "nomem_encr"],]$DatumE))) {
     data_new_wave6[row, "month"] <- 1
+    count_newusers6 = count_newusers6 + 1
   } else {
     
     first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave6[row, "nomem_encr"],]$wave)
@@ -327,6 +350,8 @@ for (row in 1:nrow(data_new_wave6)) {
 
 # Newly started
 data_new_wave6 <- rbind(data_new_wave6, filter(data_wave6, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
+
+count_newusers6 = count_newusers6 + nrow(filter(data_wave6, Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment" & !(nomem_encr %in% data_wave5[data_wave5$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]$nomem_encr)))
 
 #b <- filter(data_new_wave6, nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)
 
