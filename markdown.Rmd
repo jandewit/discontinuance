@@ -49,28 +49,28 @@ hist(data_wave1$PE_UTAUT)
 # UTAUT: Effort expectancy (users)
 data_wave1$EE1a_UTAUTn <- as.numeric(data_wave1$EE1a_UTAUT)
 data_wave1$EE2a_UTAUTn <- as.numeric(data_wave1$EE2a_UTAUT)
-# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave1$EE1a_UTAUTn_r = car::recode(data_wave1$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave1$EEa_UTAUT <- rowMeans(data_wave1[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+# Since the item EE2a_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave1$EE2a_UTAUTn_r = car::recode(data_wave1$EE2a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave1$EEa_UTAUT <- rowMeans(data_wave1[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave1[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+psy::cronbach(data_wave1[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")])
 hist(data_wave1$EEa_UTAUT)
 
 
 # UTAUT: Effort expectancy (non-users)
 data_wave1$EE1b_UTAUTn <- as.numeric(data_wave1$EE1b_UTAUT)
 data_wave1$EE2b_UTAUTn <- as.numeric(data_wave1$EE2b_UTAUT)
-# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave1$EE1b_UTAUTn_r = car::recode(data_wave1$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave1$EEb_UTAUT <- rowMeans(data_wave1[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+# Since the item EE2b_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave1$EE2b_UTAUTn_r = car::recode(data_wave1$EE2b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave1$EEb_UTAUT <- rowMeans(data_wave1[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave1[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+psy::cronbach(data_wave1[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")])
 hist(data_wave1$EEb_UTAUT)
 
 
 # UTAUT: Effort expectancy (total)
-data_wave1$EE1_UTAUT <- rowMeans(data_wave1[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
-data_wave1$EE2_UTAUT <- rowMeans(data_wave1[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave1$EE1_UTAUT <- rowMeans(data_wave1[, c("EE1a_UTAUTn","EE1b_UTAUTn")], na.rm = TRUE)
+data_wave1$EE2_UTAUT <- rowMeans(data_wave1[, c("EE2a_UTAUTn_r","EE2b_UTAUTn_r")], na.rm = TRUE)
 data_wave1$EE_UTAUT <- rowMeans(data_wave1[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
 psy::cronbach(data_wave1[, c("EE1_UTAUT","EE2_UTAUT")])
 hist(data_wave1$EE_UTAUT)
@@ -126,12 +126,14 @@ data_wave1$Beliefs_technologyperformance_5p <- car::recode(data_wave1$Beliefs_te
 data_wave1$Beliefs_falsesecurity1_5p <- car::recode(data_wave1$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 data_wave1$Beliefs_falsesecurity2_5p <- car::recode(data_wave1$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
+unique(data_wave1$CoronaInfectionOther_1)
+unique(as.numeric(data_wave1$CoronaInfectionOther_1))
+
 data_wave1 <- data_wave1 %>% mutate(Infectother = case_when( 
-  data_wave1$CoronaInfectionOther_1 == 1 | data_wave1$CoronaInfectionOther_2 == 1 | data_wave1$CoronaInfectionOther_3 == 1 | data_wave1$CoronaInfectionOther_4 == 1 | data_wave1$CoronaInfectionOther_5 == 1 | data_wave1$CoronaInfectionOther_6 == 1 ~ 1,
-  data_wave1$CoronaInfectionOther_7 == 1 | data_wave1$CoronaInfectionOther_8 == 1 ~ 0))
+  data_wave1$CoronaInfectionOther_1 == 'Ja' | data_wave1$CoronaInfectionOther_2 == 'Ja' | data_wave1$CoronaInfectionOther_3 == 'Ja' | data_wave1$CoronaInfectionOther_4 == 'Ja' | data_wave1$CoronaInfectionOther_5 == 'Ja' | data_wave1$CoronaInfectionOther_6 == 'Ja' ~ 1,
+  data_wave1$CoronaInfectionOther_7 == 'Ja' | data_wave1$CoronaInfectionOther_8 == 'Ja' ~ 0))
 
 infectotherprop <- table(data_wave1$Infectother) / length (data_wave1$Infectother)
-
 
 
 # Contextual: False security beliefs
@@ -211,28 +213,28 @@ hist(data_wave2$PE_UTAUT)
 # UTAUT: Effort expectancy (users)
 data_wave2$EE1a_UTAUTn <- as.numeric(data_wave2$EE1a_UTAUT)
 data_wave2$EE2a_UTAUTn <- as.numeric(data_wave2$EE2a_UTAUT)
-# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave2$EE1a_UTAUTn_r = car::recode(data_wave2$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave2$EEa_UTAUT <- rowMeans(data_wave2[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+# Since the item EE2a_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave2$EE2a_UTAUTn_r = car::recode(data_wave2$EE2a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave2$EEa_UTAUT <- rowMeans(data_wave2[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave2[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+psy::cronbach(data_wave2[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")])
 hist(data_wave2$EEa_UTAUT)
 
 
 # UTAUT: Effort expectancy (non-users)
 data_wave2$EE1b_UTAUTn <- as.numeric(data_wave2$EE1b_UTAUT)
 data_wave2$EE2b_UTAUTn <- as.numeric(data_wave2$EE2b_UTAUT)
-# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave2$EE1b_UTAUTn_r = car::recode(data_wave2$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave2$EEb_UTAUT <- rowMeans(data_wave2[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+# Since the item EE2b_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave2$EE2b_UTAUTn_r = car::recode(data_wave2$EE2b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave2$EEb_UTAUT <- rowMeans(data_wave2[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave2[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+psy::cronbach(data_wave2[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")])
 hist(data_wave2$EEb_UTAUT)
 
 
 # UTAUT: Effort expectancy (total)
-data_wave2$EE1_UTAUT <- rowMeans(data_wave2[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
-data_wave2$EE2_UTAUT <- rowMeans(data_wave2[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave2$EE1_UTAUT <- rowMeans(data_wave2[, c("EE1a_UTAUTn","EE1b_UTAUTn")], na.rm = TRUE)
+data_wave2$EE2_UTAUT <- rowMeans(data_wave2[, c("EE2a_UTAUTn_r","EE2b_UTAUTn_r")], na.rm = TRUE)
 data_wave2$EE_UTAUT <- rowMeans(data_wave2[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
 psy::cronbach(data_wave2[, c("EE1_UTAUT","EE2_UTAUT")])
 hist(data_wave2$EE_UTAUT)
@@ -289,8 +291,8 @@ data_wave2$Beliefs_falsesecurity1_5p <- car::recode(data_wave2$Beliefs_falsesecu
 data_wave2$Beliefs_falsesecurity2_5p <- car::recode(data_wave2$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 data_wave2 <- data_wave2 %>% mutate(Infectother = case_when( 
-  data_wave2$CoronaInfectionOther_1 == 1 | data_wave2$CoronaInfectionOther_2 == 1 | data_wave2$CoronaInfectionOther_3 == 1 | data_wave2$CoronaInfectionOther_4 == 1 | data_wave2$CoronaInfectionOther_5 == 1 | data_wave2$CoronaInfectionOther_6 == 1 ~ 1,
-  data_wave2$CoronaInfectionOther_7 == 1 | data_wave2$CoronaInfectionOther_8 == 1 ~ 0))
+  data_wave2$CoronaInfectionOther_1 == 'Ja' | data_wave2$CoronaInfectionOther_2 == 'Ja' | data_wave2$CoronaInfectionOther_3 == 'Ja' | data_wave2$CoronaInfectionOther_4 == 'Ja' | data_wave2$CoronaInfectionOther_5 == 'Ja' | data_wave2$CoronaInfectionOther_6 == 'Ja' ~ 1,
+  data_wave2$CoronaInfectionOther_7 == 'Ja' | data_wave2$CoronaInfectionOther_8 == 'Ja' ~ 0))
 
 infectotherprop <- table(data_wave2$Infectother) / length (data_wave2$Infectother)
 
@@ -380,28 +382,28 @@ hist(data_wave3$PE_UTAUT)
 # UTAUT: Effort expectancy (users)
 data_wave3$EE1a_UTAUTn <- as.numeric(data_wave3$EE1a_UTAUT)
 data_wave3$EE2a_UTAUTn <- as.numeric(data_wave3$EE2a_UTAUT)
-# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave3$EE1a_UTAUTn_r = car::recode(data_wave3$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave3$EEa_UTAUT <- rowMeans(data_wave3[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+# Since the item EE2a_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave3$EE2a_UTAUTn_r = car::recode(data_wave3$EE2a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave3$EEa_UTAUT <- rowMeans(data_wave3[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave3[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+psy::cronbach(data_wave3[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")])
 hist(data_wave3$EEa_UTAUT)
 
 
 # UTAUT: Effort expectancy (non-users)
 data_wave3$EE1b_UTAUTn <- as.numeric(data_wave3$EE1b_UTAUT)
 data_wave3$EE2b_UTAUTn <- as.numeric(data_wave3$EE2b_UTAUT)
-# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave3$EE1b_UTAUTn_r = car::recode(data_wave3$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave3$EEb_UTAUT <- rowMeans(data_wave3[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+# Since the item EE2b_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave3$EE2b_UTAUTn_r = car::recode(data_wave3$EE2b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave3$EEb_UTAUT <- rowMeans(data_wave3[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave3[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+psy::cronbach(data_wave3[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")])
 hist(data_wave3$EEb_UTAUT)
 
 
 # UTAUT: Effort expectancy (total)
-data_wave3$EE1_UTAUT <- rowMeans(data_wave3[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
-data_wave3$EE2_UTAUT <- rowMeans(data_wave3[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave3$EE1_UTAUT <- rowMeans(data_wave3[, c("EE1a_UTAUTn","EE1b_UTAUTn")], na.rm = TRUE)
+data_wave3$EE2_UTAUT <- rowMeans(data_wave3[, c("EE2a_UTAUTn_r","EE2b_UTAUTn_r")], na.rm = TRUE)
 data_wave3$EE_UTAUT <- rowMeans(data_wave3[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
 psy::cronbach(data_wave3[, c("EE1_UTAUT","EE2_UTAUT")])
 hist(data_wave3$EE_UTAUT)
@@ -458,8 +460,8 @@ data_wave3$Beliefs_falsesecurity1_5p <- car::recode(data_wave3$Beliefs_falsesecu
 data_wave3$Beliefs_falsesecurity2_5p <- car::recode(data_wave3$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 data_wave3 <- data_wave3 %>% mutate(Infectother = case_when( 
-  data_wave3$CoronaInfectionOther_1 == 1 | data_wave3$CoronaInfectionOther_2 == 1 | data_wave3$CoronaInfectionOther_3 == 1 | data_wave3$CoronaInfectionOther_4 == 1 | data_wave3$CoronaInfectionOther_5 == 1 | data_wave3$CoronaInfectionOther_6 == 1 ~ 1,
-  data_wave3$CoronaInfectionOther_7 == 1 | data_wave3$CoronaInfectionOther_8 == 1 ~ 0))
+  data_wave3$CoronaInfectionOther_1 == 'Ja' | data_wave3$CoronaInfectionOther_2 == 'Ja' | data_wave3$CoronaInfectionOther_3 == 'Ja' | data_wave3$CoronaInfectionOther_4 == 'Ja' | data_wave3$CoronaInfectionOther_5 == 'Ja' | data_wave3$CoronaInfectionOther_6 == 'Ja' ~ 1,
+  data_wave3$CoronaInfectionOther_7 == 'Ja' | data_wave3$CoronaInfectionOther_8 == 'Ja' ~ 0))
 
 infectotherprop <- table(data_wave3$Infectother) / length (data_wave3$Infectother)
 
@@ -542,28 +544,28 @@ hist(data_wave4$PE_UTAUT)
 # UTAUT: Effort expectancy (users)
 data_wave4$EE1a_UTAUTn <- as.numeric(data_wave4$EE1a_UTAUT)
 data_wave4$EE2a_UTAUTn <- as.numeric(data_wave4$EE2a_UTAUT)
-# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave4$EE1a_UTAUTn_r = car::recode(data_wave4$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave4$EEa_UTAUT <- rowMeans(data_wave4[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+# Since the item EE2a_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave4$EE2a_UTAUTn_r = car::recode(data_wave4$EE2a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave4$EEa_UTAUT <- rowMeans(data_wave4[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave4[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+psy::cronbach(data_wave4[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")])
 hist(data_wave4$EEa_UTAUT)
 
 
 # UTAUT: Effort expectancy (non-users)
 data_wave4$EE1b_UTAUTn <- as.numeric(data_wave4$EE1b_UTAUT)
 data_wave4$EE2b_UTAUTn <- as.numeric(data_wave4$EE2b_UTAUT)
-# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave4$EE1b_UTAUTn_r = car::recode(data_wave4$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave4$EEb_UTAUT <- rowMeans(data_wave4[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+# Since the item EE2b_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave4$EE2b_UTAUTn_r = car::recode(data_wave4$EE2b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave4$EEb_UTAUT <- rowMeans(data_wave4[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave4[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+psy::cronbach(data_wave4[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")])
 hist(data_wave4$EEb_UTAUT)
 
 
 # UTAUT: Effort expectancy (total)
-data_wave4$EE1_UTAUT <- rowMeans(data_wave4[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
-data_wave4$EE2_UTAUT <- rowMeans(data_wave4[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave4$EE1_UTAUT <- rowMeans(data_wave4[, c("EE1a_UTAUTn","EE1b_UTAUTn")], na.rm = TRUE)
+data_wave4$EE2_UTAUT <- rowMeans(data_wave4[, c("EE2a_UTAUTn_r","EE2b_UTAUTn_r")], na.rm = TRUE)
 data_wave4$EE_UTAUT <- rowMeans(data_wave4[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
 psy::cronbach(data_wave4[, c("EE1_UTAUT","EE2_UTAUT")])
 hist(data_wave4$EE_UTAUT)
@@ -620,8 +622,8 @@ data_wave4$Beliefs_falsesecurity1_5p <- car::recode(data_wave4$Beliefs_falsesecu
 data_wave4$Beliefs_falsesecurity2_5p <- car::recode(data_wave4$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 data_wave4 <- data_wave4 %>% mutate(Infectother = case_when( 
-  data_wave4$CoronaInfectionOther_1 == 1 | data_wave4$CoronaInfectionOther_2 == 1 | data_wave4$CoronaInfectionOther_3 == 1 | data_wave4$CoronaInfectionOther_4 == 1 | data_wave4$CoronaInfectionOther_5 == 1 | data_wave4$CoronaInfectionOther_6 == 1 ~ 1,
-  data_wave4$CoronaInfectionOther_7 == 1 | data_wave4$CoronaInfectionOther_8 == 1 ~ 0))
+  data_wave4$CoronaInfectionOther_1 == 'Ja' | data_wave4$CoronaInfectionOther_2 == 'Ja' | data_wave4$CoronaInfectionOther_3 == 'Ja' | data_wave4$CoronaInfectionOther_4 == 'Ja' | data_wave4$CoronaInfectionOther_5 == 'Ja' | data_wave4$CoronaInfectionOther_6 == 'Ja' ~ 1,
+  data_wave4$CoronaInfectionOther_7 == 'Ja' | data_wave4$CoronaInfectionOther_8 == 'Ja' ~ 0))
 
 infectotherprop <- table(data_wave4$Infectother) / length (data_wave4$Infectother)
 
@@ -704,28 +706,28 @@ hist(data_wave5$PE_UTAUT)
 # UTAUT: Effort expectancy (users)
 data_wave5$EE1a_UTAUTn <- as.numeric(data_wave5$EE1a_UTAUT)
 data_wave5$EE2a_UTAUTn <- as.numeric(data_wave5$EE2a_UTAUT)
-# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave5$EE1a_UTAUTn_r = car::recode(data_wave5$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave5$EEa_UTAUT <- rowMeans(data_wave5[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+# Since the item EE2a_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave5$EE2a_UTAUTn_r = car::recode(data_wave5$EE2a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave5$EEa_UTAUT <- rowMeans(data_wave5[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave5[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+psy::cronbach(data_wave5[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")])
 hist(data_wave5$EEa_UTAUT)
 
 
 # UTAUT: Effort expectancy (non-users)
 data_wave5$EE1b_UTAUTn <- as.numeric(data_wave5$EE1b_UTAUT)
 data_wave5$EE2b_UTAUTn <- as.numeric(data_wave5$EE2b_UTAUT)
-# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave5$EE1b_UTAUTn_r = car::recode(data_wave5$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave5$EEb_UTAUT <- rowMeans(data_wave5[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+# Since the item EE2b_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave5$EE2b_UTAUTn_r = car::recode(data_wave5$EE2b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave5$EEb_UTAUT <- rowMeans(data_wave5[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave5[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+psy::cronbach(data_wave5[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")])
 hist(data_wave5$EEb_UTAUT)
 
 
 # UTAUT: Effort expectancy (total)
-data_wave5$EE1_UTAUT <- rowMeans(data_wave5[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
-data_wave5$EE2_UTAUT <- rowMeans(data_wave5[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave5$EE1_UTAUT <- rowMeans(data_wave5[, c("EE1a_UTAUTn","EE1b_UTAUTn")], na.rm = TRUE)
+data_wave5$EE2_UTAUT <- rowMeans(data_wave5[, c("EE2a_UTAUTn_r","EE2b_UTAUTn_r")], na.rm = TRUE)
 data_wave5$EE_UTAUT <- rowMeans(data_wave5[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
 psy::cronbach(data_wave5[, c("EE1_UTAUT","EE2_UTAUT")])
 hist(data_wave5$EE_UTAUT)
@@ -782,8 +784,8 @@ data_wave5$Beliefs_falsesecurity1_5p <- car::recode(data_wave5$Beliefs_falsesecu
 data_wave5$Beliefs_falsesecurity2_5p <- car::recode(data_wave5$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 data_wave5 <- data_wave5 %>% mutate(Infectother = case_when( 
-  data_wave5$CoronaInfectionOther_1 == 1 | data_wave5$CoronaInfectionOther_2 == 1 | data_wave5$CoronaInfectionOther_3 == 1 | data_wave5$CoronaInfectionOther_4 == 1 | data_wave5$CoronaInfectionOther_5 == 1 | data_wave5$CoronaInfectionOther_6 == 1 ~ 1,
-  data_wave5$CoronaInfectionOther_7 == 1 | data_wave5$CoronaInfectionOther_8 == 1 ~ 0))
+  data_wave5$CoronaInfectionOther_1 == 'Ja' | data_wave5$CoronaInfectionOther_2 == 'Ja' | data_wave5$CoronaInfectionOther_3 == 'Ja' | data_wave5$CoronaInfectionOther_4 == 'Ja' | data_wave5$CoronaInfectionOther_5 == 'Ja' | data_wave5$CoronaInfectionOther_6 == 'Ja' ~ 1,
+  data_wave5$CoronaInfectionOther_7 == 'Ja' | data_wave5$CoronaInfectionOther_8 == 'Ja' ~ 0))
 
 infectotherprop <- table(data_wave5$Infectother) / length (data_wave5$Infectother)
 
@@ -866,28 +868,28 @@ hist(data_wave6$PE_UTAUT)
 # UTAUT: Effort expectancy (users)
 data_wave6$EE1a_UTAUTn <- as.numeric(data_wave6$EE1a_UTAUT)
 data_wave6$EE2a_UTAUTn <- as.numeric(data_wave6$EE2a_UTAUT)
-# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave6$EE1a_UTAUTn_r = car::recode(data_wave6$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave6$EEa_UTAUT <- rowMeans(data_wave6[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+# Since the item EE2a_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave6$EE2a_UTAUTn_r = car::recode(data_wave6$EE2a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave6$EEa_UTAUT <- rowMeans(data_wave6[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave6[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+psy::cronbach(data_wave6[, c("EE1a_UTAUTn", "EE2a_UTAUTn_r")])
 hist(data_wave6$EEa_UTAUT)
 
 
 # UTAUT: Effort expectancy (non-users)
 data_wave6$EE1b_UTAUTn <- as.numeric(data_wave6$EE1b_UTAUT)
 data_wave6$EE2b_UTAUTn <- as.numeric(data_wave6$EE2b_UTAUT)
-# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
-data_wave6$EE1b_UTAUTn_r = car::recode(data_wave6$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
-data_wave6$EEb_UTAUT <- rowMeans(data_wave6[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+# Since the item EE2b_UTAUT is positively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave6$EE2b_UTAUTn_r = car::recode(data_wave6$EE2b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave6$EEb_UTAUT <- rowMeans(data_wave6[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")], na.rm = TRUE)
 
-psy::cronbach(data_wave6[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+psy::cronbach(data_wave6[, c("EE1b_UTAUTn", "EE2b_UTAUTn_r")])
 hist(data_wave6$EEb_UTAUT)
 
 
 # UTAUT: Effort expectancy (total)
-data_wave6$EE1_UTAUT <- rowMeans(data_wave6[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
-data_wave6$EE2_UTAUT <- rowMeans(data_wave6[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave6$EE1_UTAUT <- rowMeans(data_wave6[, c("EE1a_UTAUTn","EE1b_UTAUTn")], na.rm = TRUE)
+data_wave6$EE2_UTAUT <- rowMeans(data_wave6[, c("EE2a_UTAUTn_r","EE2b_UTAUTn_r")], na.rm = TRUE)
 data_wave6$EE_UTAUT <- rowMeans(data_wave6[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
 psy::cronbach(data_wave6[, c("EE1_UTAUT","EE2_UTAUT")])
 hist(data_wave6$EE_UTAUT)
@@ -944,8 +946,8 @@ data_wave6$Beliefs_falsesecurity1_5p <- car::recode(data_wave6$Beliefs_falsesecu
 data_wave6$Beliefs_falsesecurity2_5p <- car::recode(data_wave6$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 data_wave6 <- data_wave6 %>% mutate(Infectother = case_when( 
-  data_wave6$CoronaInfectionOther_1 == 1 | data_wave6$CoronaInfectionOther_2 == 1 | data_wave6$CoronaInfectionOther_3 == 1 | data_wave6$CoronaInfectionOther_4 == 1 | data_wave6$CoronaInfectionOther_5 == 1 | data_wave6$CoronaInfectionOther_6 == 1 ~ 1,
-  data_wave6$CoronaInfectionOther_7 == 1 | data_wave6$CoronaInfectionOther_8 == 1 ~ 0))
+  data_wave6$CoronaInfectionOther_1 == 'Ja' | data_wave6$CoronaInfectionOther_2 == 'Ja' | data_wave6$CoronaInfectionOther_3 == 'Ja' | data_wave6$CoronaInfectionOther_4 == 'Ja' | data_wave6$CoronaInfectionOther_5 == 'Ja' | data_wave6$CoronaInfectionOther_6 == 'Ja' ~ 1,
+  data_wave6$CoronaInfectionOther_7 == 'Ja' | data_wave6$CoronaInfectionOther_8 == 'Ja' ~ 0))
 
 infectotherprop <- table(data_wave6$Infectother) / length (data_wave6$Infectother)
 
@@ -1407,6 +1409,498 @@ for (row in 1:nrow(num_rightcensored)) {
 }
 
 num_rightcensored_endstudy <- num_rightcensored[num_rightcensored$last_wave != 6,]
+
+
+
+# Survival analysis
+# 1. Inspecting the relationship between time points and the cloglog transformation of the observed hazards
+#    to determine the baseline hazard.
+
+data_complete %>%
+  group_by(month) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth()
+
+
+data_base <- data_complete %>%
+  group_by(month) %>%
+  summarise(event = sum(event),
+            total = n())
+
+data_base <- data_base[-c(5,7,8,9,10,11,13,14,15,17),]
+
+data_base %>% mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth()
+
+ggplot(data_complete, aes(x = month, y = event)) + geom_smooth() + stat_smooth(method="lm", se=TRUE, fill=NA,
+                formula=y ~ poly(x, 4, raw=TRUE),colour="red")
+
+data_complete %>%
+  group_by(month) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = log(hazard/(1-hazard)))) + # log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth()
+
+
+
+Gompertz_Model_Baseline <- glm(formula = event ~ month,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Gompertz_Model_nl_Baseline <- glm(formula = event ~ poly(month, 4, raw=TRUE) + wave,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+summary(Gompertz_Model_Baseline)
+summary(Gompertz_Model_nl_Baseline)
+
+summ(Gompertz_Model_Baseline, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_Baseline, exp = T) #exp = T means that we want exponentiated estimates
+
+Gompertz_Model_Baseline$aic
+Gompertz_Model_nl_Baseline$aic
+
+
+# With a baseline model, check which link function performs best
+ids <- data.frame(nomem_encr = unique(data_complete$nomem_encr))
+set.seed(123)
+ids_train <- sample_frac(ids, 0.8)
+ids_test <- ids[!ids$nomem_encr %in% ids_train$nomem_encr,]
+data_complete_train <- data_complete[data_complete$nomem_encr %in% ids_train$nomem_encr,]
+data_complete_test <- data_complete[data_complete$nomem_encr %in% ids_test,]
+
+Gompertz_Model_Baseline_tr <- glm(formula = event ~ month,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete_train)
+
+Gompertz_Model_Baseline <- glm(formula = event ~ month,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Gompertz_Model_Baseline2 <- glm(formula = event ~ poly(month, 4),
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+summary(Gompertz_Model_Baseline)
+summary(Gompertz_Model_Baseline2)
+summ(Gompertz_Model_Baseline, exp = T)
+summ(Gompertz_Model_Baseline2, exp = T)
+
+
+Gompertz_Model_Context_tr <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete_train)
+
+Gompertz_Model_Context_tr2 <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete_train)
+
+
+
+
+#observed hazards
+Obs_Haz <- pull(data_complete_test, event)
+
+#predicted hazards
+Pred_Haz_Full <- predict(Gompertz_Model_Baseline_tr, data_complete_test, type = "response")
+
+#predictive deviance
+Pred_Dev_Full <- tibble(obs = Obs_Haz, pred = Pred_Haz_Full) %>%
+  mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
+  summarise(deviance = -2*sum(dev))%>%
+  pull(deviance)
+
+Pred_Dev_Full
+
+
+#predicted hazards
+Pred_Haz_Full2 <- predict(Gompertz_Model_Baseline_tr2, data_complete_test, type = "response")
+
+#predictive deviance
+Pred_Dev_Full2 <- tibble(obs = Obs_Haz, pred = Pred_Haz_Full2) %>%
+  mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
+  summarise(deviance = -2*sum(dev))%>%
+  pull(deviance)
+
+Pred_Dev_Full2
+
+
+
+# Version with a polynomial base hazard appears to have a better fit (lower AIC), so we might want to continue with that
+
+
+# 2. Include demographic predictors
+
+# Recode age categories into 17-34, 35-54, 55-64, 65-89 (cf. our previous paper)
+max(data_complete$leeftijd)
+data_complete$lftdcat_re <- NA
+data_complete[data_complete$lftdcat == '15 - 24 jaar', ]$lftdcat_re <- '17 - 34 jaar'
+data_complete[data_complete$lftdcat == '25 - 34 jaar', ]$lftdcat_re <- '17 - 34 jaar'
+data_complete[data_complete$lftdcat == '35 - 44 jaar', ]$lftdcat_re <- '35 - 54 jaar'
+data_complete[data_complete$lftdcat == '45 - 54 jaar', ]$lftdcat_re <- '35 - 54 jaar'
+data_complete[data_complete$lftdcat == '55 - 64 jaar', ]$lftdcat_re <- '55 - 64 jaar'
+data_complete[data_complete$lftdcat == '65 jaar en ouder',]$lftdcat_re <- '65 - 89 jaar'
+
+
+# Recode education level into low, medium, high (cf. our previous paper and Statistics Netherlands / CBS)
+data_complete$oplcat_re <- NA
+data_complete[data_complete$oplcat == 'basisonderwijs', ]$oplcat_re <- 'low'
+data_complete[data_complete$oplcat == 'vmbo', ]$oplcat_re <- 'low'
+data_complete[data_complete$oplcat == 'havo/vwo', ]$oplcat_re <- 'middle'
+data_complete[data_complete$oplcat == 'mbo', ]$oplcat_re <- 'middle'
+data_complete[data_complete$oplcat == 'hbo', ]$oplcat_re <- 'high'
+data_complete[data_complete$oplcat == 'wo', ]$oplcat_re <- 'high'
+data_complete$oplcat_re <- relevel(factor(data_complete$oplcat_re), ref = 'low')
+
+data_complete %>%
+  group_by(month, geslacht) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = log(-log(1-hazard)),
+             col = geslacht)) +
+  geom_point() +
+  geom_smooth()
+
+
+data_complete %>%
+  group_by(month, lftdcat_re) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = log(-log(1-hazard)),
+             col = lftdcat_re)) +
+  geom_point() +
+  geom_smooth()
+
+data_complete %>%
+  group_by(month, oplcat_re) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = log(-log(1-hazard)),
+             col = oplcat_re)) +
+  geom_point() +
+  geom_smooth()
+
+
+
+Gompertz_Model_Demographics <- glm(formula = event ~ month + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+Gompertz_Model_nl_Demographics <- glm(formula = event ~ poly(month, 4, raw=TRUE) + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+summary(Gompertz_Model_Demographics)
+summary(Gompertz_Model_nl_Demographics)
+
+summ(Gompertz_Model_Demographics, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_Demographics, exp = T) #exp = T means that we want exponentiated estimates
+
+
+# 3. Add UTAUT variables
+
+data_complete %>%
+  group_by(PE_UTAUT) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = PE_UTAUT, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(EE_UTAUT) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = EE_UTAUT, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(FC_UTAUT) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = FC_UTAUT, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(SI_UTAUT) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = SI_UTAUT, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+Gompertz_Model_UTAUT <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+Gompertz_Model_nl_UTAUT <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+summary(Gompertz_Model_UTAUT)
+summary(Gompertz_Model_nl_UTAUT)
+
+summ(Gompertz_Model_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
+
+
+# 4. Add HBM variables
+
+data_complete %>%
+  group_by(HBM_PSus_self) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_PSus_self, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+data_complete %>%
+  group_by(HBM_PSev_self) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_PSev_self, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+data_complete$HBM_selfefficacy_CoronaMelder = as.numeric(data_complete$HBM_selfefficacy_CoronaMelder)
+
+data_complete %>%
+  group_by(HBM_selfefficacy_CoronaMelder) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_selfefficacy_CoronaMelder, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+data_complete$HBM_perceivedbenefits_CoronaMelder = as.numeric(data_complete$HBM_perceivedbenefits_CoronaMelder)
+
+data_complete %>%
+  group_by(HBM_perceivedbenefits_CoronaMelder) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_perceivedbenefits_CoronaMelder, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+data_complete$HBM_barriers_CoronaMelder = as.numeric(data_complete$HBM_barriers_CoronaMelder)
+
+data_complete %>%
+  group_by(HBM_barriers_CoronaMelder) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_barriers_CoronaMelder, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete$notifications_1
+
+
+Gompertz_Model_HBM <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+Gompertz_Model_nl_HBM <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+summary(Gompertz_Model_HBM)
+summary(Gompertz_Model_nl_HBM)
+
+summ(Gompertz_Model_HBM, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_HBM, exp = T) #exp = T means that we want exponentiated estimates
+
+
+
+# 5. Add contextual variables
+data_complete %>%
+  group_by(Beliefs_monitoring) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = Beliefs_monitoring, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(Beliefs_Conspiracy) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = Beliefs_Conspiracy, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(Beliefs_fearB) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = Beliefs_fearB, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(Beliefs_Society) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = Beliefs_Society, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(Beliefs_datasafety_5p) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = Beliefs_datasafety_5p, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+
+data_complete$HBM_PSus_other2 <- as.numeric(data_complete$HBM_PSus_other2)
+
+data_complete %>%
+  group_by(HBM_PSus_other2) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_PSus_other2, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete$HBM_PSev_other2 <- as.numeric(data_complete$HBM_PSev_other2)
+
+data_complete %>%
+  group_by(HBM_PSev_other2) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = HBM_PSev_other2, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+data_complete %>%
+  group_by(Beliefs_technologyperformance_5p) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = Beliefs_technologyperformance_5p, y = hazard)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(method = "lm")
+
+unique(data_wave1$Infectother)
+data_complete$Infectother <- as.numeric(data_complete$Infectother)
+
+# ===
+
+f <- filter(data_complete, notifications_1 == 'Ja, 1 keer')$notifications
+f <- filter(data_complete, notifications_1 == 'Nee')
+
+f <- data_complete[data_complete$nomem_encr %in% filter(data_complete, notifications_1 == 'Ja, al meerdere keren')$nomem_encr,]
+
+data_complete$notifications <- NA
+data_complete <- mutate(data_complete, notifications = ifelse(notifications_1 == 'Ja, al meerdere keren' | notifications_1 == 'Ja, 1 keer', 'Ja', notifications))
+data_complete <- mutate(data_complete, notifications = ifelse(notifications_1 == 'Nee', 'Nee', notifications))
+
+nrow(filter(data_complete, is.na(notifications_1)))
+
+
+#filter(data_complete, notifications_1 == 'Ja, 1 keer')$notifications <- 'Ja'
+#filter(data_complete, notifications_1 == 'Ja, al meerdere keren')$notifications <- 'Ja'
+#data_complete[data_complete$nomem_encr %in% filter(data_complete, notifications_1 == 'Ja, al meerdere keren')$nomem_encr,]$notifications <- 'Ja'
+#data_complete[data_complete$nomem_encr %in% filter(data_complete, notifications_1 == 'Ja, 1 keer')$nomem_encr,]$notifications <- 'Ja'
+#data_complete[data_complete$nomem_encr %in% filter(data_complete, notifications_1 == 'Nee')$nomem_encr,]$notifications <- 'Nee'
+
+
+data_complete %>%
+  group_by(month, notifications) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = log(-log(1-hazard)),
+             col = notifications)) +
+  geom_point() +
+  geom_smooth()
+
+
+data_complete$Infectother <- factor(data_complete$Infectother)
+
+data_complete %>%
+  group_by(month, Infectother) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = log(-log(1-hazard)),
+             col = Infectother)) +
+  geom_point() +
+  geom_smooth()
+
+
+Gompertz_Model_Context <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+Gompertz_Model_Context2 <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Gompertz_Model_nl_Context <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re + wave,
+                               family = binomial(link = "cloglog"),
+                               data = data_complete)
+
+Gompertz_Model_nl_Context2 <- glm(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+summary(Gompertz_Model_Context)
+summary(Gompertz_Model_Context2)
+summary(Gompertz_Model_nl_Context)
+summary(Gompertz_Model_nl_Context2)
+
+summ(Gompertz_Model_Context, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_Context2, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_Context, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_Context2, exp = T) #exp = T means that we want exponentiated estimates
+
+anova(Gompertz_Model_Context, Gompertz_Model_Context2, test ="Chisq")
+
+
+# Plotting the survival curve
+plot(Gompertz_Model_Baseline)
 
   #filter(data_complete, event == 0 & )
 
