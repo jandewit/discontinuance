@@ -36,11 +36,330 @@ data_wave1_in <- read.spss('L_CoronaMelder_wave1_3p.sav', to.data.frame=TRUE, us
 data_wave1 <- data_wave1_in[!is.na(data_wave1_in$duur),]
 data_wave1['wave'] <- 1
 
+## Calculate mean scores on the different factors
+# UTAUT: Performance expectancy
+data_wave1$PE1_UTAUTn <- as.numeric(data_wave1$PE1_UTAUT)
+data_wave1$PE2_UTAUTn <- as.numeric(data_wave1$PE2_UTAUT)
+data_wave1$PE_UTAUT <- rowMeans(data_wave1[, c("PE1_UTAUTn", "PE2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+hist(data_wave1$PE_UTAUT)
+
+
+# UTAUT: Effort expectancy (users)
+data_wave1$EE1a_UTAUTn <- as.numeric(data_wave1$EE1a_UTAUT)
+data_wave1$EE2a_UTAUTn <- as.numeric(data_wave1$EE2a_UTAUT)
+# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave1$EE1a_UTAUTn_r = car::recode(data_wave1$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave1$EEa_UTAUT <- rowMeans(data_wave1[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+hist(data_wave1$EEa_UTAUT)
+
+
+# UTAUT: Effort expectancy (non-users)
+data_wave1$EE1b_UTAUTn <- as.numeric(data_wave1$EE1b_UTAUT)
+data_wave1$EE2b_UTAUTn <- as.numeric(data_wave1$EE2b_UTAUT)
+# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave1$EE1b_UTAUTn_r = car::recode(data_wave1$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave1$EEb_UTAUT <- rowMeans(data_wave1[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+hist(data_wave1$EEb_UTAUT)
+
+
+# UTAUT: Effort expectancy (total)
+data_wave1$EE1_UTAUT <- rowMeans(data_wave1[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
+data_wave1$EE2_UTAUT <- rowMeans(data_wave1[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave1$EE_UTAUT <- rowMeans(data_wave1[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
+psy::cronbach(data_wave1[, c("EE1_UTAUT","EE2_UTAUT")])
+hist(data_wave1$EE_UTAUT)
+
+
+# UTAUT: Social influence
+data_wave1$SI1_UTAUTn <- as.numeric(data_wave1$SI1_UTAUT)
+data_wave1$SI2_UTAUTn <- as.numeric(data_wave1$SI2_UTAUT)
+data_wave1$SI_UTAUT <- rowMeans(data_wave1[, c("SI1_UTAUTn", "SI2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+hist(data_wave1$SI_UTAUT)
+
+
+# UTAUT: Facilitating conditions
+data_wave1$FC1_UTAUTn <- as.numeric(data_wave1$FC1_UTAUT)
+data_wave1$FC2_UTAUTn <- as.numeric(data_wave1$FC2_UTAUT)
+data_wave1$FC_UTAUT <- rowMeans(data_wave1[, c("FC1_UTAUTn", "FC2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+hist(data_wave1$FC_UTAUT)
+
+
+# HBM: Perceived susceptibility
+data_wave1$HBM_PSus_self1n <- as.numeric(data_wave1$HBM_PSus_self1)
+data_wave1$HBM_PSus_self2n <- as.numeric(data_wave1$HBM_PSus_self2)
+data_wave1$HBM_PSus_self <- rowMeans(data_wave1[, c("HBM_PSus_self1n", "HBM_PSus_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+hist(data_wave1$HBM_PSus_self)
+
+
+# HBM: Perceived severity
+data_wave1$HBM_PSev_self1n <- as.numeric(data_wave1$HBM_PSev_self1)
+data_wave1$HBM_PSev_self2n <- as.numeric(data_wave1$HBM_PSev_self2)
+data_wave1$HBM_PSev_self <- rowMeans(data_wave1[, c("HBM_PSev_self1n", "HBM_PSev_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+hist(data_wave1$HBM_PSev_self)
+
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
+data_wave1$Beliefs_datasafetyn <- as.numeric(data_wave1$Beliefs_datasafety)
+data_wave1$Beliefs_datasafety_5p <- car::recode(data_wave1$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+
+bla <- data.frame(levels = unique(data_wave1$Beliefs_datasafety), value = as.numeric(unique(data_wave1$Beliefs_datasafety)))
+
+# From Nadine
+data_wave1$Beliefs_technologyperformancen <- as.numeric(data_wave1$Beliefs_technologyperformance)
+data_wave1$Beliefs_falsesecurity1n <- as.numeric(data_wave1$Beliefs_falsesecurity1)
+data_wave1$Beliefs_falsesecurity2n <- as.numeric(data_wave1$Beliefs_falsesecurity2)
+data_wave1$Beliefs_technologyperformance_5p <- car::recode(data_wave1$Beliefs_technologyperformancen, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave1$Beliefs_falsesecurity1_5p <- car::recode(data_wave1$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave1$Beliefs_falsesecurity2_5p <- car::recode(data_wave1$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+data_wave1 <- data_wave1 %>% mutate(Infectother = case_when( 
+  data_wave1$CoronaInfectionOther_1 == 1 | data_wave1$CoronaInfectionOther_2 == 1 | data_wave1$CoronaInfectionOther_3 == 1 | data_wave1$CoronaInfectionOther_4 == 1 | data_wave1$CoronaInfectionOther_5 == 1 | data_wave1$CoronaInfectionOther_6 == 1 ~ 1,
+  data_wave1$CoronaInfectionOther_7 == 1 | data_wave1$CoronaInfectionOther_8 == 1 ~ 0))
+
+infectotherprop <- table(data_wave1$Infectother) / length (data_wave1$Infectother)
+
+
+
+# Contextual: False security beliefs
+#data_wave1$Beliefs_falsesecurity1n <- as.numeric(data_wave1$Beliefs_falsesecurity1)
+#data_wave1$Beliefs_falsesecurity2n <- as.numeric(data_wave1$Beliefs_falsesecurity2)
+#data_wave1$Beliefs_falsesecurity <- rowMeans(data_wave1[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")], na.rm = TRUE)
+
+#psy::cronbach(data_wave1[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")])
+#hist(data_wave1$Beliefs_falsesecurity)
+
+# Contextual: Societal beliefs
+data_wave1$Beliefs_civicdutyn <- as.numeric(data_wave1$Beliefs_civicduty)
+data_wave1$Beliefs_benefiteconomicn <- as.numeric(data_wave1$Beliefs_benefiteconomic)
+data_wave1$Beliefs_Protectriskgroupsn <- as.numeric(data_wave1$Beliefs_Protectriskgroups)
+data_wave1$Beliefs_TrustGovernmentn <- as.numeric(data_wave1$Beliefs_TrustGovernment)
+data_wave1$Beliefs_Society <- rowMeans(data_wave1[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+hist(data_wave1$Beliefs_Society)
+
+
+# Contextual: Conspiracy beliefs
+data_wave1$Beliefs_Conspiracy1n <- as.numeric(data_wave1$Beliefs_Conspiracy1)
+data_wave1$Beliefs_Conspiracy2n <- as.numeric(data_wave1$Beliefs_Conspiracy2)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave1$Beliefs_Conspiracy1_5p <- car::recode(data_wave1$Beliefs_Conspiracy1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave1$Beliefs_Conspiracy2_5p <- car::recode(data_wave1$Beliefs_Conspiracy2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+
+data_wave1$Beliefs_Conspiracy <- rowMeans(data_wave1[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+hist(data_wave1$Beliefs_Conspiracy)
+
+
+# Contextual: Monitoring beliefs
+data_wave1$Beliefs_locationmonitoringn <- as.numeric(data_wave1$Beliefs_locationmonitoring)
+data_wave1$Beliefs_identitymonitoringn <- as.numeric(data_wave1$Beliefs_identitymonitoring)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave1$Beliefs_locationmonitoring_5p <- car::recode(data_wave1$Beliefs_locationmonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave1$Beliefs_identitymonitoring_5p <- car::recode(data_wave1$Beliefs_identitymonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3')
+
+data_wave1$Beliefs_monitoring <- rowMeans(data_wave1[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+#psy::cronbach(data_wave1[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p", "Beliefs_datasafety_5p")])
+hist(data_wave1$Beliefs_monitoring)
+
+
+# Contextual: Fear beliefs
+data_wave1$Beliefs_fearn <- as.numeric(data_wave1$Beliefs_fear)
+data_wave1$Beliefs_notificationfearn <- as.numeric(data_wave1$Beliefs_notificationfear)
+data_wave1$Beliefs_fearB <- rowMeans(data_wave1[, c("Beliefs_fearn", "Beliefs_notificationfearn")], na.rm = TRUE)
+
+psy::cronbach(data_wave1[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+hist(data_wave1$Beliefs_fearB)
+
+
 ##### Wave 2
 data_wave2_in <- read.spss('L_Corona_app_wave2_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
 # Filter out the respondents that did not complete the entire survey 
 data_wave2 <- data_wave2_in[!is.na(data_wave2_in$duur),]
 data_wave2['wave'] <- 2
+
+## Calculate mean scores on the different factors
+# UTAUT: Performance expectancy
+data_wave2$PE1_UTAUTn <- as.numeric(data_wave2$PE1_UTAUT)
+data_wave2$PE2_UTAUTn <- as.numeric(data_wave2$PE2_UTAUT)
+data_wave2$PE_UTAUT <- rowMeans(data_wave2[, c("PE1_UTAUTn", "PE2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+hist(data_wave2$PE_UTAUT)
+
+
+# UTAUT: Effort expectancy (users)
+data_wave2$EE1a_UTAUTn <- as.numeric(data_wave2$EE1a_UTAUT)
+data_wave2$EE2a_UTAUTn <- as.numeric(data_wave2$EE2a_UTAUT)
+# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave2$EE1a_UTAUTn_r = car::recode(data_wave2$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave2$EEa_UTAUT <- rowMeans(data_wave2[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+hist(data_wave2$EEa_UTAUT)
+
+
+# UTAUT: Effort expectancy (non-users)
+data_wave2$EE1b_UTAUTn <- as.numeric(data_wave2$EE1b_UTAUT)
+data_wave2$EE2b_UTAUTn <- as.numeric(data_wave2$EE2b_UTAUT)
+# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave2$EE1b_UTAUTn_r = car::recode(data_wave2$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave2$EEb_UTAUT <- rowMeans(data_wave2[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+hist(data_wave2$EEb_UTAUT)
+
+
+# UTAUT: Effort expectancy (total)
+data_wave2$EE1_UTAUT <- rowMeans(data_wave2[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
+data_wave2$EE2_UTAUT <- rowMeans(data_wave2[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave2$EE_UTAUT <- rowMeans(data_wave2[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
+psy::cronbach(data_wave2[, c("EE1_UTAUT","EE2_UTAUT")])
+hist(data_wave2$EE_UTAUT)
+
+
+# UTAUT: Social influence
+data_wave2$SI1_UTAUTn <- as.numeric(data_wave2$SI1_UTAUT)
+data_wave2$SI2_UTAUTn <- as.numeric(data_wave2$SI2_UTAUT)
+data_wave2$SI_UTAUT <- rowMeans(data_wave2[, c("SI1_UTAUTn", "SI2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+hist(data_wave2$SI_UTAUT)
+
+
+# UTAUT: Facilitating conditions
+data_wave2$FC1_UTAUTn <- as.numeric(data_wave2$FC1_UTAUT)
+data_wave2$FC2_UTAUTn <- as.numeric(data_wave2$FC2_UTAUT)
+data_wave2$FC_UTAUT <- rowMeans(data_wave2[, c("FC1_UTAUTn", "FC2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+hist(data_wave2$FC_UTAUT)
+
+
+# HBM: Perceived susceptibility
+data_wave2$HBM_PSus_self1n <- as.numeric(data_wave2$HBM_PSus_self1)
+data_wave2$HBM_PSus_self2n <- as.numeric(data_wave2$HBM_PSus_self2)
+data_wave2$HBM_PSus_self <- rowMeans(data_wave2[, c("HBM_PSus_self1n", "HBM_PSus_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+hist(data_wave2$HBM_PSus_self)
+
+
+# HBM: Perceived severity
+data_wave2$HBM_PSev_self1n <- as.numeric(data_wave2$HBM_PSev_self1)
+data_wave2$HBM_PSev_self2n <- as.numeric(data_wave2$HBM_PSev_self2)
+data_wave2$HBM_PSev_self <- rowMeans(data_wave2[, c("HBM_PSev_self1n", "HBM_PSev_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+hist(data_wave2$HBM_PSev_self)
+
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
+data_wave2$Beliefs_datasafetyn <- as.numeric(data_wave2$Beliefs_datasafety)
+data_wave2$Beliefs_datasafety_5p <- car::recode(data_wave2$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+
+bla <- data.frame(levels = unique(data_wave2$Beliefs_datasafety), value = as.numeric(unique(data_wave2$Beliefs_datasafety)))
+
+# From Nadine
+data_wave2$Beliefs_technologyperformancen <- as.numeric(data_wave2$Beliefs_technologyperformance)
+data_wave2$Beliefs_falsesecurity1n <- as.numeric(data_wave2$Beliefs_falsesecurity1)
+data_wave2$Beliefs_falsesecurity2n <- as.numeric(data_wave2$Beliefs_falsesecurity2)
+data_wave2$Beliefs_technologyperformance_5p <- car::recode(data_wave2$Beliefs_technologyperformancen, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave2$Beliefs_falsesecurity1_5p <- car::recode(data_wave2$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave2$Beliefs_falsesecurity2_5p <- car::recode(data_wave2$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+data_wave2 <- data_wave2 %>% mutate(Infectother = case_when( 
+  data_wave2$CoronaInfectionOther_1 == 1 | data_wave2$CoronaInfectionOther_2 == 1 | data_wave2$CoronaInfectionOther_3 == 1 | data_wave2$CoronaInfectionOther_4 == 1 | data_wave2$CoronaInfectionOther_5 == 1 | data_wave2$CoronaInfectionOther_6 == 1 ~ 1,
+  data_wave2$CoronaInfectionOther_7 == 1 | data_wave2$CoronaInfectionOther_8 == 1 ~ 0))
+
+infectotherprop <- table(data_wave2$Infectother) / length (data_wave2$Infectother)
+
+
+
+# Contextual: False security beliefs
+#data_wave2$Beliefs_falsesecurity1n <- as.numeric(data_wave2$Beliefs_falsesecurity1)
+#data_wave2$Beliefs_falsesecurity2n <- as.numeric(data_wave2$Beliefs_falsesecurity2)
+#data_wave2$Beliefs_falsesecurity <- rowMeans(data_wave2[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")], na.rm = TRUE)
+
+#psy::cronbach(data_wave2[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")])
+#hist(data_wave2$Beliefs_falsesecurity)
+
+# Contextual: Societal beliefs
+data_wave2$Beliefs_civicdutyn <- as.numeric(data_wave2$Beliefs_civicduty)
+data_wave2$Beliefs_benefiteconomicn <- as.numeric(data_wave2$Beliefs_benefiteconomic)
+data_wave2$Beliefs_Protectriskgroupsn <- as.numeric(data_wave2$Beliefs_Protectriskgroups)
+data_wave2$Trust_Gov_1n <- as.numeric(data_wave2$Trust_Gov_1)
+data_wave2$Trust_Gov_2n <- as.numeric(data_wave2$Trust_Gov_2)
+data_wave2$Trust_Gov_3n <- as.numeric(data_wave2$Trust_Gov_3)
+data_wave2$Trust_Gov_4n <- as.numeric(data_wave2$Trust_Gov_4)
+data_wave2$Trust_Gov_5n <- as.numeric(data_wave2$Trust_Gov_5)
+data_wave2$Trust_Gov_6n <- as.numeric(data_wave2$Trust_Gov_6)
+data_wave2$Trust_Gov_7n <- as.numeric(data_wave2$Trust_Gov_7)
+data_wave2$Beliefs_TrustGovernmentn <- rowMeans(data_wave2[, c("Trust_Gov_1n", "Trust_Gov_2n", "Trust_Gov_3n", "Trust_Gov_4n", "Trust_Gov_5n", "Trust_Gov_6n", "Trust_Gov_7n")])
+data_wave2$Beliefs_Society <- rowMeans(data_wave2[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+hist(data_wave2$Beliefs_Society)
+
+
+# Contextual: Conspiracy beliefs
+data_wave2$Beliefs_Conspiracy1n <- as.numeric(data_wave2$Beliefs_Conspiracy1)
+data_wave2$Beliefs_Conspiracy2n <- as.numeric(data_wave2$Beliefs_Conspiracy2)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave2$Beliefs_Conspiracy1_5p <- car::recode(data_wave2$Beliefs_Conspiracy1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave2$Beliefs_Conspiracy2_5p <- car::recode(data_wave2$Beliefs_Conspiracy2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+
+data_wave2$Beliefs_Conspiracy <- rowMeans(data_wave2[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+hist(data_wave2$Beliefs_Conspiracy)
+
+
+# Contextual: Monitoring beliefs
+data_wave2$Beliefs_locationmonitoringn <- as.numeric(data_wave2$Beliefs_locationmonitoring)
+data_wave2$Beliefs_identitymonitoringn <- as.numeric(data_wave2$Beliefs_identitymonitoring)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave2$Beliefs_locationmonitoring_5p <- car::recode(data_wave2$Beliefs_locationmonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave2$Beliefs_identitymonitoring_5p <- car::recode(data_wave2$Beliefs_identitymonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3')
+
+data_wave2$Beliefs_monitoring <- rowMeans(data_wave2[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+#psy::cronbach(data_wave2[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p", "Beliefs_datasafety_5p")])
+hist(data_wave2$Beliefs_monitoring)
+
+
+# Contextual: Fear beliefs
+data_wave2$Beliefs_fearn <- as.numeric(data_wave2$Beliefs_fear)
+data_wave2$Beliefs_notificationfearn <- as.numeric(data_wave2$Beliefs_notificationfear)
+data_wave2$Beliefs_fearB <- rowMeans(data_wave2[, c("Beliefs_fearn", "Beliefs_notificationfearn")], na.rm = TRUE)
+
+psy::cronbach(data_wave2[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+hist(data_wave2$Beliefs_fearB)
+
 
 ##### Wave 3
 data_wave3_in <- read.spss('L_Corona_app_wave3_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
@@ -48,11 +367,323 @@ data_wave3_in <- read.spss('L_Corona_app_wave3_3p.sav', to.data.frame=TRUE, use.
 data_wave3 <- data_wave3_in[!is.na(data_wave3_in$duur),]
 data_wave3['wave'] <- 3
 
+## Calculate mean scores on the different factors
+# UTAUT: Performance expectancy
+data_wave3$PE1_UTAUTn <- as.numeric(data_wave3$PE1_UTAUT)
+data_wave3$PE2_UTAUTn <- as.numeric(data_wave3$PE2_UTAUT)
+data_wave3$PE_UTAUT <- rowMeans(data_wave3[, c("PE1_UTAUTn", "PE2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+hist(data_wave3$PE_UTAUT)
+
+
+# UTAUT: Effort expectancy (users)
+data_wave3$EE1a_UTAUTn <- as.numeric(data_wave3$EE1a_UTAUT)
+data_wave3$EE2a_UTAUTn <- as.numeric(data_wave3$EE2a_UTAUT)
+# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave3$EE1a_UTAUTn_r = car::recode(data_wave3$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave3$EEa_UTAUT <- rowMeans(data_wave3[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+hist(data_wave3$EEa_UTAUT)
+
+
+# UTAUT: Effort expectancy (non-users)
+data_wave3$EE1b_UTAUTn <- as.numeric(data_wave3$EE1b_UTAUT)
+data_wave3$EE2b_UTAUTn <- as.numeric(data_wave3$EE2b_UTAUT)
+# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave3$EE1b_UTAUTn_r = car::recode(data_wave3$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave3$EEb_UTAUT <- rowMeans(data_wave3[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+hist(data_wave3$EEb_UTAUT)
+
+
+# UTAUT: Effort expectancy (total)
+data_wave3$EE1_UTAUT <- rowMeans(data_wave3[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
+data_wave3$EE2_UTAUT <- rowMeans(data_wave3[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave3$EE_UTAUT <- rowMeans(data_wave3[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
+psy::cronbach(data_wave3[, c("EE1_UTAUT","EE2_UTAUT")])
+hist(data_wave3$EE_UTAUT)
+
+
+# UTAUT: Social influence
+data_wave3$SI1_UTAUTn <- as.numeric(data_wave3$SI1_UTAUT)
+data_wave3$SI2_UTAUTn <- as.numeric(data_wave3$SI2_UTAUT)
+data_wave3$SI_UTAUT <- rowMeans(data_wave3[, c("SI1_UTAUTn", "SI2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+hist(data_wave3$SI_UTAUT)
+
+
+# UTAUT: Facilitating conditions
+data_wave3$FC1_UTAUTn <- as.numeric(data_wave3$FC1_UTAUT)
+data_wave3$FC2_UTAUTn <- as.numeric(data_wave3$FC2_UTAUT)
+data_wave3$FC_UTAUT <- rowMeans(data_wave3[, c("FC1_UTAUTn", "FC2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+hist(data_wave3$FC_UTAUT)
+
+
+# HBM: Perceived susceptibility
+data_wave3$HBM_PSus_self1n <- as.numeric(data_wave3$HBM_PSus_self1)
+data_wave3$HBM_PSus_self2n <- as.numeric(data_wave3$HBM_PSus_self2)
+data_wave3$HBM_PSus_self <- rowMeans(data_wave3[, c("HBM_PSus_self1n", "HBM_PSus_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+hist(data_wave3$HBM_PSus_self)
+
+
+# HBM: Perceived severity
+data_wave3$HBM_PSev_self1n <- as.numeric(data_wave3$HBM_PSev_self1)
+data_wave3$HBM_PSev_self2n <- as.numeric(data_wave3$HBM_PSev_self2)
+data_wave3$HBM_PSev_self <- rowMeans(data_wave3[, c("HBM_PSev_self1n", "HBM_PSev_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+hist(data_wave3$HBM_PSev_self)
+
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
+data_wave3$Beliefs_datasafetyn <- as.numeric(data_wave3$Beliefs_datasafety)
+data_wave3$Beliefs_datasafety_5p <- car::recode(data_wave3$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+
+bla <- data.frame(levels = unique(data_wave3$Beliefs_datasafety), value = as.numeric(unique(data_wave3$Beliefs_datasafety)))
+
+# From Nadine
+data_wave3$Beliefs_technologyperformancen <- as.numeric(data_wave3$Beliefs_technologyperformance)
+data_wave3$Beliefs_falsesecurity1n <- as.numeric(data_wave3$Beliefs_falsesecurity1)
+data_wave3$Beliefs_falsesecurity2n <- as.numeric(data_wave3$Beliefs_falsesecurity2)
+data_wave3$Beliefs_technologyperformance_5p <- car::recode(data_wave3$Beliefs_technologyperformancen, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave3$Beliefs_falsesecurity1_5p <- car::recode(data_wave3$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave3$Beliefs_falsesecurity2_5p <- car::recode(data_wave3$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+data_wave3 <- data_wave3 %>% mutate(Infectother = case_when( 
+  data_wave3$CoronaInfectionOther_1 == 1 | data_wave3$CoronaInfectionOther_2 == 1 | data_wave3$CoronaInfectionOther_3 == 1 | data_wave3$CoronaInfectionOther_4 == 1 | data_wave3$CoronaInfectionOther_5 == 1 | data_wave3$CoronaInfectionOther_6 == 1 ~ 1,
+  data_wave3$CoronaInfectionOther_7 == 1 | data_wave3$CoronaInfectionOther_8 == 1 ~ 0))
+
+infectotherprop <- table(data_wave3$Infectother) / length (data_wave3$Infectother)
+
+
+
+# Contextual: False security beliefs
+#data_wave3$Beliefs_falsesecurity1n <- as.numeric(data_wave3$Beliefs_falsesecurity1)
+#data_wave3$Beliefs_falsesecurity2n <- as.numeric(data_wave3$Beliefs_falsesecurity2)
+#data_wave3$Beliefs_falsesecurity <- rowMeans(data_wave3[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")], na.rm = TRUE)
+
+#psy::cronbach(data_wave3[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")])
+#hist(data_wave3$Beliefs_falsesecurity)
+
+# Contextual: Societal beliefs
+data_wave3$Beliefs_civicdutyn <- as.numeric(data_wave3$Beliefs_civicduty)
+data_wave3$Beliefs_benefiteconomicn <- as.numeric(data_wave3$Beliefs_benefiteconomic)
+data_wave3$Beliefs_Protectriskgroupsn <- as.numeric(data_wave3$Beliefs_Protectriskgroups)
+data_wave3$Beliefs_TrustGovernmentn <- as.numeric(data_wave3$Beliefs_TrustGovernment)
+data_wave3$Beliefs_Society <- rowMeans(data_wave3[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+hist(data_wave3$Beliefs_Society)
+
+
+# Contextual: Conspiracy beliefs
+data_wave3$Beliefs_Conspiracy1n <- as.numeric(data_wave3$Beliefs_Conspiracy1)
+data_wave3$Beliefs_Conspiracy2n <- as.numeric(data_wave3$Beliefs_Conspiracy2)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave3$Beliefs_Conspiracy1_5p <- car::recode(data_wave3$Beliefs_Conspiracy1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave3$Beliefs_Conspiracy2_5p <- car::recode(data_wave3$Beliefs_Conspiracy2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+
+data_wave3$Beliefs_Conspiracy <- rowMeans(data_wave3[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+hist(data_wave3$Beliefs_Conspiracy)
+
+
+# Contextual: Monitoring beliefs
+data_wave3$Beliefs_locationmonitoringn <- as.numeric(data_wave3$Beliefs_locationmonitoring)
+data_wave3$Beliefs_identitymonitoringn <- as.numeric(data_wave3$Beliefs_identitymonitoring)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave3$Beliefs_locationmonitoring_5p <- car::recode(data_wave3$Beliefs_locationmonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave3$Beliefs_identitymonitoring_5p <- car::recode(data_wave3$Beliefs_identitymonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3')
+
+data_wave3$Beliefs_monitoring <- rowMeans(data_wave3[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+#psy::cronbach(data_wave3[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p", "Beliefs_datasafety_5p")])
+hist(data_wave3$Beliefs_monitoring)
+
+
+# Contextual: Fear beliefs
+data_wave3$Beliefs_fearn <- as.numeric(data_wave3$Beliefs_fear)
+data_wave3$Beliefs_notificationfearn <- as.numeric(data_wave3$Beliefs_notificationfear)
+data_wave3$Beliefs_fearB <- rowMeans(data_wave3[, c("Beliefs_fearn", "Beliefs_notificationfearn")], na.rm = TRUE)
+
+psy::cronbach(data_wave3[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+hist(data_wave3$Beliefs_fearB)
+
+
 ##### Wave 4
 data_wave4_in <- read.spss('L_Corona_app_wave4_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
 # Filter out the respondents that did not complete the entire survey 
 data_wave4 <- data_wave4_in[!is.na(data_wave4_in$duur),]
 data_wave4['wave'] <- 4
+
+## Calculate mean scores on the different factors
+# UTAUT: Performance expectancy
+data_wave4$PE1_UTAUTn <- as.numeric(data_wave4$PE1_UTAUT)
+data_wave4$PE2_UTAUTn <- as.numeric(data_wave4$PE2_UTAUT)
+data_wave4$PE_UTAUT <- rowMeans(data_wave4[, c("PE1_UTAUTn", "PE2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+hist(data_wave4$PE_UTAUT)
+
+
+# UTAUT: Effort expectancy (users)
+data_wave4$EE1a_UTAUTn <- as.numeric(data_wave4$EE1a_UTAUT)
+data_wave4$EE2a_UTAUTn <- as.numeric(data_wave4$EE2a_UTAUT)
+# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave4$EE1a_UTAUTn_r = car::recode(data_wave4$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave4$EEa_UTAUT <- rowMeans(data_wave4[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+hist(data_wave4$EEa_UTAUT)
+
+
+# UTAUT: Effort expectancy (non-users)
+data_wave4$EE1b_UTAUTn <- as.numeric(data_wave4$EE1b_UTAUT)
+data_wave4$EE2b_UTAUTn <- as.numeric(data_wave4$EE2b_UTAUT)
+# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave4$EE1b_UTAUTn_r = car::recode(data_wave4$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave4$EEb_UTAUT <- rowMeans(data_wave4[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+hist(data_wave4$EEb_UTAUT)
+
+
+# UTAUT: Effort expectancy (total)
+data_wave4$EE1_UTAUT <- rowMeans(data_wave4[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
+data_wave4$EE2_UTAUT <- rowMeans(data_wave4[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave4$EE_UTAUT <- rowMeans(data_wave4[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
+psy::cronbach(data_wave4[, c("EE1_UTAUT","EE2_UTAUT")])
+hist(data_wave4$EE_UTAUT)
+
+
+# UTAUT: Social influence
+data_wave4$SI1_UTAUTn <- as.numeric(data_wave4$SI1_UTAUT)
+data_wave4$SI2_UTAUTn <- as.numeric(data_wave4$SI2_UTAUT)
+data_wave4$SI_UTAUT <- rowMeans(data_wave4[, c("SI1_UTAUTn", "SI2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+hist(data_wave4$SI_UTAUT)
+
+
+# UTAUT: Facilitating conditions
+data_wave4$FC1_UTAUTn <- as.numeric(data_wave4$FC1_UTAUT)
+data_wave4$FC2_UTAUTn <- as.numeric(data_wave4$FC2_UTAUT)
+data_wave4$FC_UTAUT <- rowMeans(data_wave4[, c("FC1_UTAUTn", "FC2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+hist(data_wave4$FC_UTAUT)
+
+
+# HBM: Perceived susceptibility
+data_wave4$HBM_PSus_self1n <- as.numeric(data_wave4$HBM_PSus_self1)
+data_wave4$HBM_PSus_self2n <- as.numeric(data_wave4$HBM_PSus_self2)
+data_wave4$HBM_PSus_self <- rowMeans(data_wave4[, c("HBM_PSus_self1n", "HBM_PSus_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+hist(data_wave4$HBM_PSus_self)
+
+
+# HBM: Perceived severity
+data_wave4$HBM_PSev_self1n <- as.numeric(data_wave4$HBM_PSev_self1)
+data_wave4$HBM_PSev_self2n <- as.numeric(data_wave4$HBM_PSev_self2)
+data_wave4$HBM_PSev_self <- rowMeans(data_wave4[, c("HBM_PSev_self1n", "HBM_PSev_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+hist(data_wave4$HBM_PSev_self)
+
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
+data_wave4$Beliefs_datasafetyn <- as.numeric(data_wave4$Beliefs_datasafety)
+data_wave4$Beliefs_datasafety_5p <- car::recode(data_wave4$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+
+bla <- data.frame(levels = unique(data_wave4$Beliefs_datasafety), value = as.numeric(unique(data_wave4$Beliefs_datasafety)))
+
+# From Nadine
+data_wave4$Beliefs_technologyperformancen <- as.numeric(data_wave4$Beliefs_technologyperformance)
+data_wave4$Beliefs_falsesecurity1n <- as.numeric(data_wave4$Beliefs_falsesecurity1)
+data_wave4$Beliefs_falsesecurity2n <- as.numeric(data_wave4$Beliefs_falsesecurity2)
+data_wave4$Beliefs_technologyperformance_5p <- car::recode(data_wave4$Beliefs_technologyperformancen, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave4$Beliefs_falsesecurity1_5p <- car::recode(data_wave4$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave4$Beliefs_falsesecurity2_5p <- car::recode(data_wave4$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+data_wave4 <- data_wave4 %>% mutate(Infectother = case_when( 
+  data_wave4$CoronaInfectionOther_1 == 1 | data_wave4$CoronaInfectionOther_2 == 1 | data_wave4$CoronaInfectionOther_3 == 1 | data_wave4$CoronaInfectionOther_4 == 1 | data_wave4$CoronaInfectionOther_5 == 1 | data_wave4$CoronaInfectionOther_6 == 1 ~ 1,
+  data_wave4$CoronaInfectionOther_7 == 1 | data_wave4$CoronaInfectionOther_8 == 1 ~ 0))
+
+infectotherprop <- table(data_wave4$Infectother) / length (data_wave4$Infectother)
+
+
+
+# Contextual: False security beliefs
+#data_wave4$Beliefs_falsesecurity1n <- as.numeric(data_wave4$Beliefs_falsesecurity1)
+#data_wave4$Beliefs_falsesecurity2n <- as.numeric(data_wave4$Beliefs_falsesecurity2)
+#data_wave4$Beliefs_falsesecurity <- rowMeans(data_wave4[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")], na.rm = TRUE)
+
+#psy::cronbach(data_wave4[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")])
+#hist(data_wave4$Beliefs_falsesecurity)
+
+# Contextual: Societal beliefs
+data_wave4$Beliefs_civicdutyn <- as.numeric(data_wave4$Beliefs_civicduty)
+data_wave4$Beliefs_benefiteconomicn <- as.numeric(data_wave4$Beliefs_benefiteconomic)
+data_wave4$Beliefs_Protectriskgroupsn <- as.numeric(data_wave4$Beliefs_Protectriskgroups)
+data_wave4$Beliefs_TrustGovernmentn <- as.numeric(data_wave4$Beliefs_TrustGovernment)
+data_wave4$Beliefs_Society <- rowMeans(data_wave4[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+hist(data_wave4$Beliefs_Society)
+
+
+# Contextual: Conspiracy beliefs
+data_wave4$Beliefs_Conspiracy1n <- as.numeric(data_wave4$Beliefs_Conspiracy1)
+data_wave4$Beliefs_Conspiracy2n <- as.numeric(data_wave4$Beliefs_Conspiracy2)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave4$Beliefs_Conspiracy1_5p <- car::recode(data_wave4$Beliefs_Conspiracy1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave4$Beliefs_Conspiracy2_5p <- car::recode(data_wave4$Beliefs_Conspiracy2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+
+data_wave4$Beliefs_Conspiracy <- rowMeans(data_wave4[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+hist(data_wave4$Beliefs_Conspiracy)
+
+
+# Contextual: Monitoring beliefs
+data_wave4$Beliefs_locationmonitoringn <- as.numeric(data_wave4$Beliefs_locationmonitoring)
+data_wave4$Beliefs_identitymonitoringn <- as.numeric(data_wave4$Beliefs_identitymonitoring)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave4$Beliefs_locationmonitoring_5p <- car::recode(data_wave4$Beliefs_locationmonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave4$Beliefs_identitymonitoring_5p <- car::recode(data_wave4$Beliefs_identitymonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3')
+
+data_wave4$Beliefs_monitoring <- rowMeans(data_wave4[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+#psy::cronbach(data_wave4[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p", "Beliefs_datasafety_5p")])
+hist(data_wave4$Beliefs_monitoring)
+
+
+# Contextual: Fear beliefs
+data_wave4$Beliefs_fearn <- as.numeric(data_wave4$Beliefs_fear)
+data_wave4$Beliefs_notificationfearn <- as.numeric(data_wave4$Beliefs_notificationfear)
+data_wave4$Beliefs_fearB <- rowMeans(data_wave4[, c("Beliefs_fearn", "Beliefs_notificationfearn")], na.rm = TRUE)
+
+psy::cronbach(data_wave4[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+hist(data_wave4$Beliefs_fearB)
+
 
 ##### Wave 5
 data_wave5_in <- read.spss('L_Corona_app_wave5_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
@@ -60,11 +691,323 @@ data_wave5_in <- read.spss('L_Corona_app_wave5_3p.sav', to.data.frame=TRUE, use.
 data_wave5 <- data_wave5_in[!is.na(data_wave5_in$duur),]
 data_wave5['wave'] <- 5
 
+## Calculate mean scores on the different factors
+# UTAUT: Performance expectancy
+data_wave5$PE1_UTAUTn <- as.numeric(data_wave5$PE1_UTAUT)
+data_wave5$PE2_UTAUTn <- as.numeric(data_wave5$PE2_UTAUT)
+data_wave5$PE_UTAUT <- rowMeans(data_wave5[, c("PE1_UTAUTn", "PE2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+hist(data_wave5$PE_UTAUT)
+
+
+# UTAUT: Effort expectancy (users)
+data_wave5$EE1a_UTAUTn <- as.numeric(data_wave5$EE1a_UTAUT)
+data_wave5$EE2a_UTAUTn <- as.numeric(data_wave5$EE2a_UTAUT)
+# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave5$EE1a_UTAUTn_r = car::recode(data_wave5$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave5$EEa_UTAUT <- rowMeans(data_wave5[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+hist(data_wave5$EEa_UTAUT)
+
+
+# UTAUT: Effort expectancy (non-users)
+data_wave5$EE1b_UTAUTn <- as.numeric(data_wave5$EE1b_UTAUT)
+data_wave5$EE2b_UTAUTn <- as.numeric(data_wave5$EE2b_UTAUT)
+# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave5$EE1b_UTAUTn_r = car::recode(data_wave5$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave5$EEb_UTAUT <- rowMeans(data_wave5[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+hist(data_wave5$EEb_UTAUT)
+
+
+# UTAUT: Effort expectancy (total)
+data_wave5$EE1_UTAUT <- rowMeans(data_wave5[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
+data_wave5$EE2_UTAUT <- rowMeans(data_wave5[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave5$EE_UTAUT <- rowMeans(data_wave5[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
+psy::cronbach(data_wave5[, c("EE1_UTAUT","EE2_UTAUT")])
+hist(data_wave5$EE_UTAUT)
+
+
+# UTAUT: Social influence
+data_wave5$SI1_UTAUTn <- as.numeric(data_wave5$SI1_UTAUT)
+data_wave5$SI2_UTAUTn <- as.numeric(data_wave5$SI2_UTAUT)
+data_wave5$SI_UTAUT <- rowMeans(data_wave5[, c("SI1_UTAUTn", "SI2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+hist(data_wave5$SI_UTAUT)
+
+
+# UTAUT: Facilitating conditions
+data_wave5$FC1_UTAUTn <- as.numeric(data_wave5$FC1_UTAUT)
+data_wave5$FC2_UTAUTn <- as.numeric(data_wave5$FC2_UTAUT)
+data_wave5$FC_UTAUT <- rowMeans(data_wave5[, c("FC1_UTAUTn", "FC2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+hist(data_wave5$FC_UTAUT)
+
+
+# HBM: Perceived susceptibility
+data_wave5$HBM_PSus_self1n <- as.numeric(data_wave5$HBM_PSus_self1)
+data_wave5$HBM_PSus_self2n <- as.numeric(data_wave5$HBM_PSus_self2)
+data_wave5$HBM_PSus_self <- rowMeans(data_wave5[, c("HBM_PSus_self1n", "HBM_PSus_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+hist(data_wave5$HBM_PSus_self)
+
+
+# HBM: Perceived severity
+data_wave5$HBM_PSev_self1n <- as.numeric(data_wave5$HBM_PSev_self1)
+data_wave5$HBM_PSev_self2n <- as.numeric(data_wave5$HBM_PSev_self2)
+data_wave5$HBM_PSev_self <- rowMeans(data_wave5[, c("HBM_PSev_self1n", "HBM_PSev_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+hist(data_wave5$HBM_PSev_self)
+
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
+data_wave5$Beliefs_datasafetyn <- as.numeric(data_wave5$Beliefs_datasafety)
+data_wave5$Beliefs_datasafety_5p <- car::recode(data_wave5$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+
+bla <- data.frame(levels = unique(data_wave5$Beliefs_datasafety), value = as.numeric(unique(data_wave5$Beliefs_datasafety)))
+
+# From Nadine
+data_wave5$Beliefs_technologyperformancen <- as.numeric(data_wave5$Beliefs_technologyperformance)
+data_wave5$Beliefs_falsesecurity1n <- as.numeric(data_wave5$Beliefs_falsesecurity1)
+data_wave5$Beliefs_falsesecurity2n <- as.numeric(data_wave5$Beliefs_falsesecurity2)
+data_wave5$Beliefs_technologyperformance_5p <- car::recode(data_wave5$Beliefs_technologyperformancen, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave5$Beliefs_falsesecurity1_5p <- car::recode(data_wave5$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave5$Beliefs_falsesecurity2_5p <- car::recode(data_wave5$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+data_wave5 <- data_wave5 %>% mutate(Infectother = case_when( 
+  data_wave5$CoronaInfectionOther_1 == 1 | data_wave5$CoronaInfectionOther_2 == 1 | data_wave5$CoronaInfectionOther_3 == 1 | data_wave5$CoronaInfectionOther_4 == 1 | data_wave5$CoronaInfectionOther_5 == 1 | data_wave5$CoronaInfectionOther_6 == 1 ~ 1,
+  data_wave5$CoronaInfectionOther_7 == 1 | data_wave5$CoronaInfectionOther_8 == 1 ~ 0))
+
+infectotherprop <- table(data_wave5$Infectother) / length (data_wave5$Infectother)
+
+
+
+# Contextual: False security beliefs
+#data_wave5$Beliefs_falsesecurity1n <- as.numeric(data_wave5$Beliefs_falsesecurity1)
+#data_wave5$Beliefs_falsesecurity2n <- as.numeric(data_wave5$Beliefs_falsesecurity2)
+#data_wave5$Beliefs_falsesecurity <- rowMeans(data_wave5[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")], na.rm = TRUE)
+
+#psy::cronbach(data_wave5[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")])
+#hist(data_wave5$Beliefs_falsesecurity)
+
+# Contextual: Societal beliefs
+data_wave5$Beliefs_civicdutyn <- as.numeric(data_wave5$Beliefs_civicduty)
+data_wave5$Beliefs_benefiteconomicn <- as.numeric(data_wave5$Beliefs_benefiteconomic)
+data_wave5$Beliefs_Protectriskgroupsn <- as.numeric(data_wave5$Beliefs_Protectriskgroups)
+data_wave5$Beliefs_TrustGovernmentn <- as.numeric(data_wave5$Beliefs_TrustGovernment)
+data_wave5$Beliefs_Society <- rowMeans(data_wave5[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+hist(data_wave5$Beliefs_Society)
+
+
+# Contextual: Conspiracy beliefs
+data_wave5$Beliefs_Conspiracy1n <- as.numeric(data_wave5$Beliefs_Conspiracy1)
+data_wave5$Beliefs_Conspiracy2n <- as.numeric(data_wave5$Beliefs_Conspiracy2)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave5$Beliefs_Conspiracy1_5p <- car::recode(data_wave5$Beliefs_Conspiracy1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave5$Beliefs_Conspiracy2_5p <- car::recode(data_wave5$Beliefs_Conspiracy2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+
+data_wave5$Beliefs_Conspiracy <- rowMeans(data_wave5[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+hist(data_wave5$Beliefs_Conspiracy)
+
+
+# Contextual: Monitoring beliefs
+data_wave5$Beliefs_locationmonitoringn <- as.numeric(data_wave5$Beliefs_locationmonitoring)
+data_wave5$Beliefs_identitymonitoringn <- as.numeric(data_wave5$Beliefs_identitymonitoring)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave5$Beliefs_locationmonitoring_5p <- car::recode(data_wave5$Beliefs_locationmonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave5$Beliefs_identitymonitoring_5p <- car::recode(data_wave5$Beliefs_identitymonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3')
+
+data_wave5$Beliefs_monitoring <- rowMeans(data_wave5[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+#psy::cronbach(data_wave5[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p", "Beliefs_datasafety_5p")])
+hist(data_wave5$Beliefs_monitoring)
+
+
+# Contextual: Fear beliefs
+data_wave5$Beliefs_fearn <- as.numeric(data_wave5$Beliefs_fear)
+data_wave5$Beliefs_notificationfearn <- as.numeric(data_wave5$Beliefs_notificationfear)
+data_wave5$Beliefs_fearB <- rowMeans(data_wave5[, c("Beliefs_fearn", "Beliefs_notificationfearn")], na.rm = TRUE)
+
+psy::cronbach(data_wave5[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+hist(data_wave5$Beliefs_fearB)
+
+
 ##### Wave 6
 data_wave6_in <- read.spss('L_Corona_app_wave6_3p.sav', to.data.frame=TRUE, use.missings=FALSE)
 # Filter out the respondents that did not complete the entire survey 
 data_wave6 <- data_wave6_in[!is.na(data_wave6_in$duur),]
 data_wave6['wave'] <- 6
+
+## Calculate mean scores on the different factors
+# UTAUT: Performance expectancy
+data_wave6$PE1_UTAUTn <- as.numeric(data_wave6$PE1_UTAUT)
+data_wave6$PE2_UTAUTn <- as.numeric(data_wave6$PE2_UTAUT)
+data_wave6$PE_UTAUT <- rowMeans(data_wave6[, c("PE1_UTAUTn", "PE2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+hist(data_wave6$PE_UTAUT)
+
+
+# UTAUT: Effort expectancy (users)
+data_wave6$EE1a_UTAUTn <- as.numeric(data_wave6$EE1a_UTAUT)
+data_wave6$EE2a_UTAUTn <- as.numeric(data_wave6$EE2a_UTAUT)
+# Since the item EE1a_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave6$EE1a_UTAUTn_r = car::recode(data_wave6$EE1a_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave6$EEa_UTAUT <- rowMeans(data_wave6[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("EE1a_UTAUTn_r", "EE2a_UTAUTn")])
+hist(data_wave6$EEa_UTAUT)
+
+
+# UTAUT: Effort expectancy (non-users)
+data_wave6$EE1b_UTAUTn <- as.numeric(data_wave6$EE1b_UTAUT)
+data_wave6$EE2b_UTAUTn <- as.numeric(data_wave6$EE2b_UTAUT)
+# Since the item EE1b_UTAUT is negatively phrased, it will be reverse coded such that higher numbers refer to higher EE
+data_wave6$EE1b_UTAUTn_r = car::recode(data_wave6$EE1b_UTAUTn, '1=7; 2=6; 3=5; 4=4; 5=3; 6=2; 7=1')
+data_wave6$EEb_UTAUT <- rowMeans(data_wave6[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("EE1b_UTAUTn_r", "EE2b_UTAUTn")])
+hist(data_wave6$EEb_UTAUT)
+
+
+# UTAUT: Effort expectancy (total)
+data_wave6$EE1_UTAUT <- rowMeans(data_wave6[, c("EE1a_UTAUTn_r","EE1b_UTAUTn_r")], na.rm = TRUE)
+data_wave6$EE2_UTAUT <- rowMeans(data_wave6[, c("EE2a_UTAUTn","EE2b_UTAUTn")], na.rm = TRUE)
+data_wave6$EE_UTAUT <- rowMeans(data_wave6[, c("EE1_UTAUT", "EE2_UTAUT")], na.rm = TRUE)
+psy::cronbach(data_wave6[, c("EE1_UTAUT","EE2_UTAUT")])
+hist(data_wave6$EE_UTAUT)
+
+
+# UTAUT: Social influence
+data_wave6$SI1_UTAUTn <- as.numeric(data_wave6$SI1_UTAUT)
+data_wave6$SI2_UTAUTn <- as.numeric(data_wave6$SI2_UTAUT)
+data_wave6$SI_UTAUT <- rowMeans(data_wave6[, c("SI1_UTAUTn", "SI2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+hist(data_wave6$SI_UTAUT)
+
+
+# UTAUT: Facilitating conditions
+data_wave6$FC1_UTAUTn <- as.numeric(data_wave6$FC1_UTAUT)
+data_wave6$FC2_UTAUTn <- as.numeric(data_wave6$FC2_UTAUT)
+data_wave6$FC_UTAUT <- rowMeans(data_wave6[, c("FC1_UTAUTn", "FC2_UTAUTn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+hist(data_wave6$FC_UTAUT)
+
+
+# HBM: Perceived susceptibility
+data_wave6$HBM_PSus_self1n <- as.numeric(data_wave6$HBM_PSus_self1)
+data_wave6$HBM_PSus_self2n <- as.numeric(data_wave6$HBM_PSus_self2)
+data_wave6$HBM_PSus_self <- rowMeans(data_wave6[, c("HBM_PSus_self1n", "HBM_PSus_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+hist(data_wave6$HBM_PSus_self)
+
+
+# HBM: Perceived severity
+data_wave6$HBM_PSev_self1n <- as.numeric(data_wave6$HBM_PSev_self1)
+data_wave6$HBM_PSev_self2n <- as.numeric(data_wave6$HBM_PSev_self2)
+data_wave6$HBM_PSev_self <- rowMeans(data_wave6[, c("HBM_PSev_self1n", "HBM_PSev_self2n")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+hist(data_wave6$HBM_PSev_self)
+
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
+data_wave6$Beliefs_datasafetyn <- as.numeric(data_wave6$Beliefs_datasafety)
+data_wave6$Beliefs_datasafety_5p <- car::recode(data_wave6$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+
+bla <- data.frame(levels = unique(data_wave6$Beliefs_datasafety), value = as.numeric(unique(data_wave6$Beliefs_datasafety)))
+
+# From Nadine
+data_wave6$Beliefs_technologyperformancen <- as.numeric(data_wave6$Beliefs_technologyperformance)
+data_wave6$Beliefs_falsesecurity1n <- as.numeric(data_wave6$Beliefs_falsesecurity1)
+data_wave6$Beliefs_falsesecurity2n <- as.numeric(data_wave6$Beliefs_falsesecurity2)
+data_wave6$Beliefs_technologyperformance_5p <- car::recode(data_wave6$Beliefs_technologyperformancen, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave6$Beliefs_falsesecurity1_5p <- car::recode(data_wave6$Beliefs_falsesecurity1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave6$Beliefs_falsesecurity2_5p <- car::recode(data_wave6$Beliefs_falsesecurity2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+data_wave6 <- data_wave6 %>% mutate(Infectother = case_when( 
+  data_wave6$CoronaInfectionOther_1 == 1 | data_wave6$CoronaInfectionOther_2 == 1 | data_wave6$CoronaInfectionOther_3 == 1 | data_wave6$CoronaInfectionOther_4 == 1 | data_wave6$CoronaInfectionOther_5 == 1 | data_wave6$CoronaInfectionOther_6 == 1 ~ 1,
+  data_wave6$CoronaInfectionOther_7 == 1 | data_wave6$CoronaInfectionOther_8 == 1 ~ 0))
+
+infectotherprop <- table(data_wave6$Infectother) / length (data_wave6$Infectother)
+
+
+
+# Contextual: False security beliefs
+#data_wave6$Beliefs_falsesecurity1n <- as.numeric(data_wave6$Beliefs_falsesecurity1)
+#data_wave6$Beliefs_falsesecurity2n <- as.numeric(data_wave6$Beliefs_falsesecurity2)
+#data_wave6$Beliefs_falsesecurity <- rowMeans(data_wave6[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")], na.rm = TRUE)
+
+#psy::cronbach(data_wave6[, c("Beliefs_falsesecurity1n", "Beliefs_falsesecurity2n")])
+#hist(data_wave6$Beliefs_falsesecurity)
+
+# Contextual: Societal beliefs
+data_wave6$Beliefs_civicdutyn <- as.numeric(data_wave6$Beliefs_civicduty)
+data_wave6$Beliefs_benefiteconomicn <- as.numeric(data_wave6$Beliefs_benefiteconomic)
+data_wave6$Beliefs_Protectriskgroupsn <- as.numeric(data_wave6$Beliefs_Protectriskgroups)
+data_wave6$Beliefs_TrustGovernmentn <- as.numeric(data_wave6$Beliefs_TrustGovernment)
+data_wave6$Beliefs_Society <- rowMeans(data_wave6[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+hist(data_wave6$Beliefs_Society)
+
+
+# Contextual: Conspiracy beliefs
+data_wave6$Beliefs_Conspiracy1n <- as.numeric(data_wave6$Beliefs_Conspiracy1)
+data_wave6$Beliefs_Conspiracy2n <- as.numeric(data_wave6$Beliefs_Conspiracy2)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave6$Beliefs_Conspiracy1_5p <- car::recode(data_wave6$Beliefs_Conspiracy1n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave6$Beliefs_Conspiracy2_5p <- car::recode(data_wave6$Beliefs_Conspiracy2n, '1=1; 2=2; 3=4; 4=5; 5=3') 
+
+
+data_wave6$Beliefs_Conspiracy <- rowMeans(data_wave6[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+hist(data_wave6$Beliefs_Conspiracy)
+
+
+# Contextual: Monitoring beliefs
+data_wave6$Beliefs_locationmonitoringn <- as.numeric(data_wave6$Beliefs_locationmonitoring)
+data_wave6$Beliefs_identitymonitoringn <- as.numeric(data_wave6$Beliefs_identitymonitoring)
+
+# The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value.
+data_wave6$Beliefs_locationmonitoring_5p <- car::recode(data_wave6$Beliefs_locationmonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3') 
+data_wave6$Beliefs_identitymonitoring_5p <- car::recode(data_wave6$Beliefs_identitymonitoringn, '1=1; 2=2; 3=4; 4=5; 5=3')
+
+data_wave6$Beliefs_monitoring <- rowMeans(data_wave6[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+#psy::cronbach(data_wave6[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p", "Beliefs_datasafety_5p")])
+hist(data_wave6$Beliefs_monitoring)
+
+
+# Contextual: Fear beliefs
+data_wave6$Beliefs_fearn <- as.numeric(data_wave6$Beliefs_fear)
+data_wave6$Beliefs_notificationfearn <- as.numeric(data_wave6$Beliefs_notificationfear)
+data_wave6$Beliefs_fearB <- rowMeans(data_wave6[, c("Beliefs_fearn", "Beliefs_notificationfearn")], na.rm = TRUE)
+
+psy::cronbach(data_wave6[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+hist(data_wave6$Beliefs_fearB)
+
 
 # Remove columns that are not present in all waves
 data_wave1 <- data_wave1[, intersect(colnames(data_wave1), colnames(data_wave2))]
@@ -358,6 +1301,97 @@ count_newusers6 = count_newusers6 + nrow(filter(data_wave6, Behavior_UTAUT == "I
 data_complete <- rbind(data_complete, filter(data_new_wave6, !(nomem_encr %in% data_complete[data_complete$event == 1,]$nomem_encr)))
 
 #test <- data_wave6[data_wave6$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]
+
+
+# Cronbach's
+participants <- unique(data_complete$nomem_encr)
+data_w1c <- filter(data_wave1, nomem_encr %in% participants)
+data_w2c <- filter(data_wave2, nomem_encr %in% participants)
+data_w3c <- filter(data_wave3, nomem_encr %in% participants)
+data_w4c <- filter(data_wave4, nomem_encr %in% participants)
+data_w5c <- filter(data_wave5, nomem_encr %in% participants)
+data_w6c <- filter(data_wave6, nomem_encr %in% participants)
+
+# UTAUT: Performance expectancy
+psy::cronbach(data_w1c[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+psy::cronbach(data_w2c[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+psy::cronbach(data_w3c[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+psy::cronbach(data_w4c[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+psy::cronbach(data_w5c[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+psy::cronbach(data_w6c[, c("PE1_UTAUTn", "PE2_UTAUTn")])
+
+# UTAUT: Effort expectancy (total)
+psy::cronbach(data_w1c[, c("EE1_UTAUT","EE2_UTAUT")])
+psy::cronbach(data_w2c[, c("EE1_UTAUT","EE2_UTAUT")])
+psy::cronbach(data_w3c[, c("EE1_UTAUT","EE2_UTAUT")])
+psy::cronbach(data_w4c[, c("EE1_UTAUT","EE2_UTAUT")])
+psy::cronbach(data_w5c[, c("EE1_UTAUT","EE2_UTAUT")])
+psy::cronbach(data_w6c[, c("EE1_UTAUT","EE2_UTAUT")])
+
+# UTAUT: Social influence
+psy::cronbach(data_w1c[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+psy::cronbach(data_w2c[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+psy::cronbach(data_w3c[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+psy::cronbach(data_w4c[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+psy::cronbach(data_w5c[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+psy::cronbach(data_w6c[, c("SI1_UTAUTn", "SI2_UTAUTn")])
+
+# UTAUT: Facilitating conditions
+psy::cronbach(data_w1c[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+psy::cronbach(data_w2c[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+psy::cronbach(data_w3c[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+psy::cronbach(data_w4c[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+psy::cronbach(data_w5c[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+psy::cronbach(data_w6c[, c("FC1_UTAUTn", "FC2_UTAUTn")])
+
+# HBM: Perceived susceptibility
+psy::cronbach(data_w1c[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+psy::cronbach(data_w2c[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+psy::cronbach(data_w3c[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+psy::cronbach(data_w4c[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+psy::cronbach(data_w5c[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+psy::cronbach(data_w6c[, c("HBM_PSus_self1n", "HBM_PSus_self2n")])
+
+# HBM: Perceived severity
+psy::cronbach(data_w1c[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+psy::cronbach(data_w2c[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+psy::cronbach(data_w3c[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+psy::cronbach(data_w4c[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+psy::cronbach(data_w5c[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+psy::cronbach(data_w6c[, c("HBM_PSev_self1n", "HBM_PSev_self2n")])
+
+# Contextual: Societal beliefs
+psy::cronbach(data_w1c[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+psy::cronbach(data_w2c[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+psy::cronbach(data_w3c[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+psy::cronbach(data_w4c[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+psy::cronbach(data_w5c[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+psy::cronbach(data_w6c[, c("Beliefs_civicdutyn", "Beliefs_benefiteconomicn", "Beliefs_Protectriskgroupsn", "Beliefs_TrustGovernmentn")])
+
+# Contextual: Conspiracy beliefs
+psy::cronbach(data_w1c[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+psy::cronbach(data_w2c[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+psy::cronbach(data_w3c[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+psy::cronbach(data_w4c[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+psy::cronbach(data_w5c[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+psy::cronbach(data_w6c[, c("Beliefs_Conspiracy1_5p", "Beliefs_Conspiracy2_5p")])
+
+# Contextual: Monitoring beliefs
+psy::cronbach(data_w1c[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+psy::cronbach(data_w2c[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+psy::cronbach(data_w3c[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+psy::cronbach(data_w4c[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+psy::cronbach(data_w5c[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+psy::cronbach(data_w6c[, c("Beliefs_locationmonitoring_5p", "Beliefs_identitymonitoring_5p")])
+
+# Contextual: Fear beliefs
+psy::cronbach(data_w1c[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+psy::cronbach(data_w2c[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+psy::cronbach(data_w3c[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+psy::cronbach(data_w4c[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+psy::cronbach(data_w5c[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+psy::cronbach(data_w6c[, c("Beliefs_fearn", "Beliefs_notificationfearn")])
+
 
 # Some useful tests for analyses
 tmp <- data_complete[, c("nomem_encr", "month", "wave", "event", "DatumE")]
