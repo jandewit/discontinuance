@@ -18,6 +18,9 @@ knitr::opts_chunk$set(warning = TRUE)
 # For importing SPSS files
 library(foreign)
 
+# Plots
+library(ggplot2)
+
 # For filtering
 library(dplyr)
 
@@ -26,6 +29,9 @@ library(magrittr)
 
 # For calculating number of days between two dates
 library(lubridate)
+
+# For elaborate summary
+library(jtools)
 
 
 ##### Load dataset of all waves (not included on Github) and remove missing values
@@ -1597,19 +1603,19 @@ data_complete %>%
 
 
 
-Gompertz_Model_Demographics <- glm(formula = event ~ month + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
-                               data = data_complete)
+#Gompertz_Model_Demographics <- glm(formula = event ~ month + geslacht + lftdcat_re + oplcat_re,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete)
 
-Gompertz_Model_nl_Demographics <- glm(formula = event ~ poly(month, 4, raw=TRUE) + geslacht + lftdcat_re + oplcat_re,
+Model_poly_Demographics <- glm(formula = event ~ poly(month, 4, raw=TRUE) + geslacht + lftdcat_re + oplcat_re,
                                family = binomial(link = "logit"),
                                data = data_complete)
 
-summary(Gompertz_Model_Demographics)
-summary(Gompertz_Model_nl_Demographics)
+#summary(Gompertz_Model_Demographics)
+summary(Model_poly_Demographics)
 
-summ(Gompertz_Model_Demographics, exp = T) #exp = T means that we want exponentiated estimates
-summ(Gompertz_Model_nl_Demographics, exp = T) #exp = T means that we want exponentiated estimates
+#summ(Gompertz_Model_Demographics, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_poly_Demographics, exp = T) #exp = T means that we want exponentiated estimates
 
 
 # 3. Add UTAUT variables
@@ -1651,19 +1657,19 @@ data_complete %>%
   geom_smooth(method = "lm")
 
 
-Gompertz_Model_UTAUT <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
+#Gompertz_Model_UTAUT <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + geslacht #+ lftdcat_re + oplcat_re,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete)
+
+Model_poly_UTAUT <- glm(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
                                data = data_complete)
 
-Gompertz_Model_nl_UTAUT <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
-                               data = data_complete)
+#summary(Gompertz_Model_UTAUT)
+summary(Model_poly_UTAUT)
 
-summary(Gompertz_Model_UTAUT)
-summary(Gompertz_Model_nl_UTAUT)
-
-summ(Gompertz_Model_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
-summ(Gompertz_Model_nl_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
+#summ(Gompertz_Model_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_poly_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
 
 
 # 4. Add HBM variables
@@ -1726,19 +1732,19 @@ data_complete %>%
 data_complete$notifications_1
 
 
-Gompertz_Model_HBM <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
+#Gompertz_Model_HBM <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + geslacht + lftdcat_re + oplcat_re,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete)
+
+Model_poly_HBM <- glm(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
                                data = data_complete)
 
-Gompertz_Model_nl_HBM <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
-                               data = data_complete)
+#summary(Gompertz_Model_HBM)
+summary(Model_poly_HBM)
 
-summary(Gompertz_Model_HBM)
-summary(Gompertz_Model_nl_HBM)
-
-summ(Gompertz_Model_HBM, exp = T) #exp = T means that we want exponentiated estimates
-summ(Gompertz_Model_nl_HBM, exp = T) #exp = T means that we want exponentiated estimates
+#summ(Gompertz_Model_HBM, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_poly_HBM, exp = T) #exp = T means that we want exponentiated estimates
 
 
 
@@ -1870,31 +1876,31 @@ data_complete %>%
   geom_smooth()
 
 
-Gompertz_Model_Context <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
-                               data = data_complete)
+#Gompertz_Model_Context <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete)
 
-Gompertz_Model_Context2 <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+#Gompertz_Model_Context2 <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+#                               family = binomial(link = "logit"),
+#                               data = data_complete)
+
+#Gompertz_Model_nl_Context <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re + wave,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete)
+
+Model_poly_Context <- glm(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
                                family = binomial(link = "logit"),
                                data = data_complete)
 
-Gompertz_Model_nl_Context <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re + wave,
-                               family = binomial(link = "cloglog"),
-                               data = data_complete)
+#summary(Gompertz_Model_Context)
+#summary(Gompertz_Model_Context2)
+#summary(Gompertz_Model_nl_Context)
+summary(Model_poly_Context)
 
-Gompertz_Model_nl_Context2 <- glm(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "logit"),
-                               data = data_complete)
-
-summary(Gompertz_Model_Context)
-summary(Gompertz_Model_Context2)
-summary(Gompertz_Model_nl_Context)
-summary(Gompertz_Model_nl_Context2)
-
-summ(Gompertz_Model_Context, exp = T) #exp = T means that we want exponentiated estimates
-summ(Gompertz_Model_Context2, exp = T) #exp = T means that we want exponentiated estimates
-summ(Gompertz_Model_nl_Context, exp = T) #exp = T means that we want exponentiated estimates
-summ(Gompertz_Model_nl_Context2, exp = T) #exp = T means that we want exponentiated estimates
+#summ(Gompertz_Model_Context, exp = T) #exp = T means that we want exponentiated estimates
+#summ(Gompertz_Model_Context2, exp = T) #exp = T means that we want exponentiated estimates
+#summ(Gompertz_Model_nl_Context, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_poly_Context, exp = T) #exp = T means that we want exponentiated estimates
 
 anova(Gompertz_Model_Context, Gompertz_Model_Context2, test ="Chisq")
 
@@ -1931,6 +1937,331 @@ plot(Gompertz_Model_Baseline)
 # test <- na.omit(test)
 # 
 # n <- test[test$stopped_wave == 6]
+
+
+
+# Plot: gender
+data_complete %>%
+  group_by(month, geslacht) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = hazard,#log(hazard/(1-hazard)),
+             col = geslacht)) +
+  geom_point() +
+  geom_smooth(se=F) + 
+  scale_colour_discrete(name = 'Gender', labels = c('Male', 'Female')) +
+  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+
+  data_complete %>%
+  group_by(month, event) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = event, col = geslacht)) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Gender', labels = c('Male', 'Female')) +
+  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+
+# Plot: age
+data_complete %>%
+  group_by(month, lftdcat_re) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = hazard,#log(hazard/(1-hazard)),
+             col = lftdcat_re)) +
+  geom_point() +
+  geom_smooth() + #se=F, method = loess, method.args = list(family = "symmetric")) + 
+  scale_colour_discrete(name = 'Age category (years)', labels = c('17-34', '35-54', '55-64', '65-89')) +
+  ylab('Hazard (chance of event)') + xlab ('Months of use')
+
+  data_complete %>%
+  group_by(month, event) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = event, col = lftdcat_re)) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Age category (years)', labels = c('17-34', '35-54', '55-64', '65-89')) +
+  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+
+# Plot: level of education
+data_complete %>%
+  group_by(month, oplcat_re) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, 
+             y = hazard,#log(hazard/(1-hazard)),
+             col = oplcat_re)) +
+  geom_point() +
+  geom_smooth(se=F) + #, method = loess, method.args = list(family = "symmetric")) + 
+  scale_colour_discrete(name = 'Level of education', labels = c('Low', 'High', 'Middle')) +
+  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+  
+  data_complete %>%
+  group_by(month, event) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = event, col = oplcat_re)) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Level of education', labels = c('Low', 'High', 'Middle')) +
+  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+
+  
+# UTAUT: PE  
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = PE_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('UTAUT: Performance expectancy') + xlab ('Months')
+
+
+# UTAUT: EE 
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = EE_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('UTAUT: Effort expectancy') + xlab ('Months')
+
+
+# UTAUT: FC 
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = FC_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('UTAUT: Facilitating conditions') + xlab ('Months')
+
+
+# UTAUT: SI 
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = SI_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('UTAUT: Social influence') + xlab ('Months')
+
+
+# HBM: Perceived susceptibility 
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_PSus_self, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('HBM: Perceived susceptibility') + xlab ('Months')
+
+
+# HBM: Perceived severity 
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_PSev_self, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('HBM: Perceived severity') + xlab ('Months')
+
+
+# HBM: Self-efficacy 
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_selfefficacy_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('HBM: Self-efficacy') + xlab ('Months')
+
+
+# HBM: Perceived benefits
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_perceivedbenefits_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('HBM: Perceived benefits') + xlab ('Months')
+
+
+# HBM: Perceived barriers
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_barriers_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('HBM: Perceived barriers') + xlab ('Months')
+
+
+# Context: Monitoring beliefs
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = Beliefs_monitoring, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 5) + ylab('Monitoring beliefs') + xlab ('Months')
+
+
+# Context: Conspiracy beliefs
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = Beliefs_Conspiracy, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 5) + ylab('Conspiracy beliefs') + xlab ('Months')
+
+# Context: Fear beliefs
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = Beliefs_fearB, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('Fear beliefs') + xlab ('Months')
+
+# Context: Societal beliefs
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = Beliefs_Society, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('Societal beliefs') + xlab ('Months')
+
+
+# Context: Data safety
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = Beliefs_datasafety_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 5) + ylab('Data safety') + xlab ('Months')
+
+
+# Context: Perceived susceptibility (others)
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_PSus_other2, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('Perceived susceptibility (others)') + xlab ('Months')
+
+
+# Context: Perceived severity (others)
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = HBM_PSev_other2, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 7) + ylab('Perceived severity (others)') + xlab ('Months')
+
+
+# Context: Technology beliefs
+data_complete %>%
+  group_by(month, as.factor(event)) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = Beliefs_technologyperformance_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth() +
+  #geom_line() + 
+  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
+  ylim(1, 5) + ylab('Technology beliefs') + xlab ('Months')
+
+# Context: Others infected
+  data_complete %>%
+  group_by(month, event) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = event, col = Infectother)) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Others infected?', labels = c('No', 'Yes')) +
+  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months')
 
  ```
 ```{=openxml}
