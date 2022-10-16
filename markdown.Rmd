@@ -1054,6 +1054,7 @@ test6 <- filter(data_wave6, Behavior_UTAUT == "Ik heb de CoronaMelder app nooit 
 # use %in% to find those that were not using last wave
 data_wave1['event'] <- 0
 data_wave1['month'] <- 1
+data_wave1['wave_re'] <- 1
 
 data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app in het verleden wel gebruikt maar op dit moment niet meer",]['event'] <- 1
 data_wave1[data_wave1$Behavior_UTAUT == "Ik heb de CoronaMelder app nooit gebruikt",]['event'] <- 1
@@ -1065,6 +1066,7 @@ data_complete <- rbind(data_complete, data_wave1[data_wave1$Behavior_UTAUT == "I
 # === WAVE 2 ===
 data_wave2['event'] <- 0
 data_wave2['month'] <- 1
+data_wave2['wave_re'] <- 1
 
 count_newusers2 = 0
 
@@ -1085,6 +1087,7 @@ for (row in 1:nrow(data_new_wave2)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$DatumE))) {
     data_new_wave2[row, "month"] <- 1
+    data_new_wave2[row, "wave_re"] <- 1
     count_newusers2 = count_newusers2 + 1
   } else {
     first_wave <- min(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$wave)
@@ -1093,6 +1096,9 @@ for (row in 1:nrow(data_new_wave2)) {
     
     days <- interval(date_start, date_current) %/% days(1)
     data_new_wave2[row, "month"] <- round(days / 30) + 1
+    
+    previous_wave <- max(data_complete[data_complete$nomem_encr == data_new_wave2[row, "nomem_encr"],]$wave_re)
+    data_new_wave2[row, "wave_re"] <- previous_wave + 1
     
   }
 }
@@ -1110,6 +1116,7 @@ data_complete <- rbind(data_complete, filter(data_new_wave2, !(nomem_encr %in% d
 # === WAVE 3 ===
 data_wave3['event'] <- 0
 data_wave3['month'] <- 1
+data_wave3['wave_re'] <- 1
 
 count_newusers3 = 0
 
@@ -1130,6 +1137,7 @@ for (row in 1:nrow(data_new_wave3)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave3[row, "nomem_encr"],]$DatumE))) {
     data_new_wave3[row, "month"] <- 1
+    data_new_wave3[row, "wave_re"] <- 1
     count_newusers3 = count_newusers3 + 1
   } else {
     
@@ -1139,6 +1147,9 @@ for (row in 1:nrow(data_new_wave3)) {
     
     days <- interval(date_start, date_current) %/% days(1)
     data_new_wave3[row, "month"] <- round(days / 30) + 1
+    
+    previous_wave <- max(data_complete[data_complete$nomem_encr == data_new_wave3[row, "nomem_encr"],]$wave_re)
+    data_new_wave3[row, "wave_re"] <- previous_wave + 1    
   }
 }
 
@@ -1156,6 +1167,7 @@ data_complete <- rbind(data_complete, filter(data_new_wave3, !(nomem_encr %in% d
 # === WAVE 4 ===
 data_wave4['event'] <- 0
 data_wave4['month'] <- 1
+data_wave4['wave_re'] <- 1
 
 count_newusers4 = 0
 
@@ -1176,6 +1188,7 @@ for (row in 1:nrow(data_new_wave4)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave4[row, "nomem_encr"],]$DatumE))) {
     data_new_wave4[row, "month"] <- 1
+    data_new_wave4[row, "wave_re"] <- 1
     count_newusers4 = count_newusers4 + 1
   } else {
     
@@ -1185,6 +1198,9 @@ for (row in 1:nrow(data_new_wave4)) {
     
     days <- interval(date_start, date_current) %/% days(1)
     data_new_wave4[row, "month"] <- round(days / 30) + 1
+    
+    previous_wave <- max(data_complete[data_complete$nomem_encr == data_new_wave4[row, "nomem_encr"],]$wave_re)
+    data_new_wave4[row, "wave_re"] <- previous_wave + 1    
   }
 }
 
@@ -1203,6 +1219,7 @@ data_complete <- rbind(data_complete, filter(data_new_wave4, !(nomem_encr %in% d
 # === WAVE 5 ===
 data_wave5['event'] <- 0
 data_wave5['month'] <- 1
+data_wave5['wave_re'] <- 1
 
 count_newusers5 = 0
 
@@ -1223,6 +1240,7 @@ for (row in 1:nrow(data_new_wave5)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave5[row, "nomem_encr"],]$DatumE))) {
     data_new_wave5[row, "month"] <- 1
+    data_new_wave5[row, "wave_re"] <- 1
     count_newusers5 = count_newusers5 + 1
   } else {
     
@@ -1241,6 +1259,9 @@ for (row in 1:nrow(data_new_wave5)) {
     
     days <- interval(date_start, date_current) %/% days(1)
     data_new_wave5[row, "month"] <- round(days / 30) + 1
+    
+    previous_wave <- max(data_complete[data_complete$nomem_encr == data_new_wave5[row, "nomem_encr"],]$wave_re)
+    data_new_wave5[row, "wave_re"] <- previous_wave + 1    
   }
 }
 
@@ -1257,6 +1278,7 @@ data_complete <- rbind(data_complete, filter(data_new_wave5, !(nomem_encr %in% d
 # === WAVE 6 ===
 data_wave6['event'] <- 0
 data_wave6['month'] <- 1
+data_wave6['wave_re'] <- 1
 
 count_newusers6 = 0
 
@@ -1277,6 +1299,7 @@ for (row in 1:nrow(data_new_wave6)) {
   # This checks for that situation, and puts month to 1 if it is the case
   if (is.na(min(data_complete[data_complete$nomem_encr == data_new_wave6[row, "nomem_encr"],]$DatumE))) {
     data_new_wave6[row, "month"] <- 1
+    data_new_wave6[row, "wave_re"] <- 1
     count_newusers6 = count_newusers6 + 1
   } else {
     
@@ -1296,6 +1319,9 @@ for (row in 1:nrow(data_new_wave6)) {
     
     days <- interval(date_start, date_current) %/% days(1)
     data_new_wave6[row, "month"] <- round(days / 30) + 1
+    
+    previous_wave <- max(data_complete[data_complete$nomem_encr == data_new_wave6[row, "nomem_encr"],]$wave_re)
+    data_new_wave6[row, "wave_re"] <- previous_wave + 1    
   }
 }
 
@@ -1419,6 +1445,21 @@ num_rightcensored_endstudy <- num_rightcensored[num_rightcensored$last_wave != 6
 
 
 # Survival analysis
+
+# Check, using Cox, whether our predictors have conditional hazards. By using ties=exact, we shift it to a discrete version.
+fit = coxph(Surv(month, event)~PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p, data=data_complete, ties='exact')
+
+test.ph = cox.zph(fit)
+
+test.ph
+
+
+corr_input <- data_complete[,c('PE_UTAUT', 'EE_UTAUT', 'FC_UTAUT', 'SI_UTAUT', 'HBM_PSus_self', 'HBM_PSev_self', 'HBM_selfefficacy_CoronaMelder', 'HBM_perceivedbenefits_CoronaMelder', 'HBM_barriers_CoronaMelder', 'Beliefs_monitoring', 'Beliefs_Conspiracy', 'Beliefs_fearB', 'Beliefs_Society', 'Beliefs_datasafety_5p', 'HBM_PSus_other2', 'HBM_PSev_other2', 'Beliefs_technologyperformance_5p')]
+
+corr_results <- cor(corr_input, method = "pearson")
+
+
+
 # 1. Inspecting the relationship between time points and the cloglog transformation of the observed hazards
 #    to determine the baseline hazard.
 
@@ -1430,6 +1471,27 @@ data_complete %>%
   ggplot(aes(x = month, y = log(-log(1-hazard)))) +
   geom_point() +
   geom_smooth()
+
+
+data_complete %>%
+  group_by(month) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = hazard)) +
+  geom_point() +
+  geom_smooth()
+
+data_complete %>%
+  group_by(month) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = month, y = hazard)) +
+  geom_point() +
+  geom_smooth() + 
+  stat_smooth(method="lm", se=TRUE, fill=NA,
+                formula=y ~ poly(x, 4, raw=TRUE), colour="red")
 
 
 data_base <- data_complete %>%
@@ -1447,6 +1509,9 @@ data_base %>% mutate(hazard = event/total) %>%
 ggplot(data_complete, aes(x = month, y = event)) + geom_smooth() + stat_smooth(method="lm", se=TRUE, fill=NA,
                 formula=y ~ poly(x, 4, raw=TRUE),colour="red")
 
+ggplot(data_complete, aes(x = wave_re, y = mean(event))) + geom_line() + stat_smooth(method="lm", se=TRUE, fill=NA,
+                formula=y ~ poly(x, 4, raw=TRUE),colour="red") + stat_smooth(method="lm", se=TRUE, fill=NA, formula=y ~ x, colour="blue")
+
 data_complete %>%
   group_by(month) %>%
   summarise(event = sum(event),
@@ -1462,15 +1527,23 @@ Gompertz_Model_Baseline <- glm(formula = event ~ month,
                                family = binomial(link = "logit"),
                                data = data_complete)
 
-Gompertz_Model_nl_Baseline <- glm(formula = event ~ poly(month, 4, raw=TRUE) + wave,
+Gompertz_Model_nl_Baseline <- glm(formula = event ~ poly(month, 3, raw=TRUE),
                                family = binomial(link = "logit"),
                                data = data_complete)
+
+Gompertz_Model_nl_Baseline2 <- glm(formula = event ~ poly(month, 4, raw=TRUE),
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+
+anova(Gompertz_Model_nl_Baseline, Gompertz_Model_nl_Baseline2, test ="Chisq")
 
 summary(Gompertz_Model_Baseline)
 summary(Gompertz_Model_nl_Baseline)
 
 summ(Gompertz_Model_Baseline, exp = T) #exp = T means that we want exponentiated estimates
 summ(Gompertz_Model_nl_Baseline, exp = T) #exp = T means that we want exponentiated estimates
+summ(Gompertz_Model_nl_Baseline2, exp = T) #exp = T means that we want exponentiated estimates
 
 Gompertz_Model_Baseline$aic
 Gompertz_Model_nl_Baseline$aic
@@ -1478,67 +1551,124 @@ Gompertz_Model_nl_Baseline$aic
 
 # With a baseline model, check which link function performs best
 ids <- data.frame(nomem_encr = unique(data_complete$nomem_encr))
-set.seed(123)
-ids_train <- sample_frac(ids, 0.8)
+set.seed(1337)
+ids_train <- sample_frac(ids, 0.7)
 ids_test <- ids[!ids$nomem_encr %in% ids_train$nomem_encr,]
 data_complete_train <- data_complete[data_complete$nomem_encr %in% ids_train$nomem_encr,]
 data_complete_test <- data_complete[data_complete$nomem_encr %in% ids_test,]
 
-Gompertz_Model_Baseline_tr <- glm(formula = event ~ month,
-                               family = binomial(link = "cloglog"),
+#Gompertz_Model_Baseline_tr <- glm(formula = event ~ month,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete_train)
+
+#Gompertz_Model_Baseline <- glm(formula = event ~ month,
+#                               family = binomial(link = "logit"),
+#                               data = data_complete)
+
+#Gompertz_Model_Baseline2 <- glm(formula = event ~ poly(month, 4),
+#                               family = binomial(link = "logit"),
+#                               data = data_complete)
+
+#summary(Gompertz_Model_Baseline)
+#summary(Gompertz_Model_Baseline2)
+#summ(Gompertz_Model_Baseline, exp = T)
+#summ(Gompertz_Model_Baseline2, exp = T)
+
+
+#Gompertz_Model_Context_tr <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+#                               family = binomial(link = "cloglog"),
+#                               data = data_complete_train)
+
+#Gompertz_Model_Context_tr2 <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+#                               family = binomial(link = "logit"),
+#                               data = data_complete_train)
+
+
+
+train_model_month <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
                                data = data_complete_train)
 
-Gompertz_Model_Baseline <- glm(formula = event ~ month,
+train_model_month2 <- glm(formula = event ~ month + wave + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
                                family = binomial(link = "logit"),
-                               data = data_complete)
-
-Gompertz_Model_Baseline2 <- glm(formula = event ~ poly(month, 4),
-                               family = binomial(link = "logit"),
-                               data = data_complete)
-
-summary(Gompertz_Model_Baseline)
-summary(Gompertz_Model_Baseline2)
-summ(Gompertz_Model_Baseline, exp = T)
-summ(Gompertz_Model_Baseline2, exp = T)
-
-
-Gompertz_Model_Context_tr <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
-                               family = binomial(link = "cloglog"),
                                data = data_complete_train)
 
-Gompertz_Model_Context_tr2 <- glm(formula = event ~ poly(month, 4) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+train_model_month3 <- glm(formula = event ~ poly(month, 4, raw=TRUE) + wave + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
                                family = binomial(link = "logit"),
                                data = data_complete_train)
 
 
+train_model_wave <- glm(formula = event ~ wave_re + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete_train)
 
+train_model_wave2 <- glm(formula = event ~ wave_re + wave + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete_train)
+
+train_model_wave3 <- glm(formula = event ~ poly(wave_re, 4, raw=TRUE) + wave + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete_train)
 
 #observed hazards
 Obs_Haz <- pull(data_complete_test, event)
 
 #predicted hazards
-Pred_Haz_Full <- predict(Gompertz_Model_Baseline_tr, data_complete_test, type = "response")
+#Pred_Haz_Full <- predict(Gompertz_Model_Baseline_tr, data_complete_test, type = "response")
+Pred_Haz_month <- predict(train_model_month, data_complete_test, type = "response")
+Pred_Haz_month2 <- predict(train_model_month2, data_complete_test, type = "response")
+Pred_Haz_month3 <- predict(train_model_month3, data_complete_test, type = "response")
+Pred_Haz_wave <- predict(train_model_wave, data_complete_test, type = "response")
+Pred_Haz_wave2 <- predict(train_model_wave2, data_complete_test, type = "response")
+Pred_Haz_wave3 <- predict(train_model_wave3, data_complete_test, type = "response")
+
 
 #predictive deviance
-Pred_Dev_Full <- tibble(obs = Obs_Haz, pred = Pred_Haz_Full) %>%
+Pred_Dev_month <- tibble(obs = Obs_Haz, pred = Pred_Haz_month) %>%
   mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
   summarise(deviance = -2*sum(dev))%>%
   pull(deviance)
 
-Pred_Dev_Full
+Pred_Dev_month
 
 
-#predicted hazards
-Pred_Haz_Full2 <- predict(Gompertz_Model_Baseline_tr2, data_complete_test, type = "response")
-
-#predictive deviance
-Pred_Dev_Full2 <- tibble(obs = Obs_Haz, pred = Pred_Haz_Full2) %>%
+Pred_Dev_month2 <- tibble(obs = Obs_Haz, pred = Pred_Haz_month2) %>%
   mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
   summarise(deviance = -2*sum(dev))%>%
   pull(deviance)
 
-Pred_Dev_Full2
+Pred_Dev_month2
 
+Pred_Dev_month3 <- tibble(obs = Obs_Haz, pred = Pred_Haz_month3) %>%
+  mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
+  summarise(deviance = -2*sum(dev))%>%
+  pull(deviance)
+
+Pred_Dev_month3
+
+
+Pred_Dev_wave <- tibble(obs = Obs_Haz, pred = Pred_Haz_wave) %>%
+  mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
+  summarise(deviance = -2*sum(dev))%>%
+  pull(deviance)
+
+Pred_Dev_wave
+
+
+Pred_Dev_wave2 <- tibble(obs = Obs_Haz, pred = Pred_Haz_wave2) %>%
+  mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
+  summarise(deviance = -2*sum(dev))%>%
+  pull(deviance)
+
+Pred_Dev_wave2
+
+
+Pred_Dev_wave3 <- tibble(obs = Obs_Haz, pred = Pred_Haz_wave3) %>%
+  mutate(dev = obs*log(pred) + (1-obs)*log(1-pred)) %>%
+  summarise(deviance = -2*sum(dev))%>%
+  pull(deviance)
+
+Pred_Dev_wave3
 
 
 # Version with a polynomial base hazard appears to have a better fit (lower AIC), so we might want to continue with that
@@ -1611,11 +1741,22 @@ Model_poly_Demographics <- glm(formula = event ~ poly(month, 4, raw=TRUE) + gesl
                                family = binomial(link = "logit"),
                                data = data_complete)
 
+Model_wave_Demographics <- glm(formula = event ~ month + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+
+anova(Model_poly_Demographics, Model_wave_Demographics, test ="Chisq")
+
+
 #summary(Gompertz_Model_Demographics)
 summary(Model_poly_Demographics)
 
+summary(Model_wave_Demographics)
+
 #summ(Gompertz_Model_Demographics, exp = T) #exp = T means that we want exponentiated estimates
 summ(Model_poly_Demographics, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_wave_Demographics, exp = T) #exp = T means that we want exponentiated estimates
 
 
 # 3. Add UTAUT variables
@@ -1892,17 +2033,45 @@ Model_poly_Context <- glm(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT 
                                family = binomial(link = "logit"),
                                data = data_complete)
 
+Model_wave_Context <- glm(formula = event ~ wave_re + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Model_month_Context <- glm(formula = event ~ month + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Model_wave2_Context <- glm(formula = event ~ poly(wave_re, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Model_bla <- glm(formula = event ~ poly(month,4,raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+Model_bla2 <- glm(formula = event ~ poly(wave,4,raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+
 #summary(Gompertz_Model_Context)
 #summary(Gompertz_Model_Context2)
 #summary(Gompertz_Model_nl_Context)
 summary(Model_poly_Context)
+summary(Model_wave_Context)
+summary(Model_month_Context)
+summary(Model_wave2_Context)
+summary(Model_bla)
 
 #summ(Gompertz_Model_Context, exp = T) #exp = T means that we want exponentiated estimates
 #summ(Gompertz_Model_Context2, exp = T) #exp = T means that we want exponentiated estimates
 #summ(Gompertz_Model_nl_Context, exp = T) #exp = T means that we want exponentiated estimates
 summ(Model_poly_Context, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_month_Context, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_wave2_Context, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_bla2, exp = T)
 
-anova(Gompertz_Model_Context, Gompertz_Model_Context2, test ="Chisq")
+anova(Model_bla, Model_bla2, test ="Chisq")
 
 
 # Plotting the survival curve
