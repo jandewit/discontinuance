@@ -1337,6 +1337,59 @@ data_complete <- rbind(data_complete, filter(data_new_wave6, !(nomem_encr %in% d
 #test <- data_wave6[data_wave6$Behavior_UTAUT == "Ik gebruik de CoronaMelder app op dit moment",]
 
 
+# Demographics for the paper (we take these from wave 1)
+demographics_table <- filter(data_wave1, nomem_encr %in% unique(data_complete$nomem_encr))
+
+# Recode age categories into 17-34, 35-54, 55-64, 65-89 (cf. our previous paper)
+demographics_table$lftdcat_re <- NA
+demographics_table[demographics_table$lftdcat == '15 - 24 jaar', ]$lftdcat_re <- '17 - 34 jaar'
+demographics_table[demographics_table$lftdcat == '25 - 34 jaar', ]$lftdcat_re <- '17 - 34 jaar'
+demographics_table[demographics_table$lftdcat == '35 - 44 jaar', ]$lftdcat_re <- '35 - 54 jaar'
+demographics_table[demographics_table$lftdcat == '45 - 54 jaar', ]$lftdcat_re <- '35 - 54 jaar'
+demographics_table[demographics_table$lftdcat == '55 - 64 jaar', ]$lftdcat_re <- '55 - 64 jaar'
+demographics_table[demographics_table$lftdcat == '65 jaar en ouder',]$lftdcat_re <- '65 - 89 jaar'
+
+
+# Recode education level into low, medium, high (cf. our previous paper and Statistics Netherlands / CBS)
+demographics_table$oplcat_re <- NA
+demographics_table[demographics_table$oplcat == 'basisonderwijs', ]$oplcat_re <- 'low'
+demographics_table[demographics_table$oplcat == 'vmbo', ]$oplcat_re <- 'low'
+demographics_table[demographics_table$oplcat == 'havo/vwo', ]$oplcat_re <- 'middle'
+demographics_table[demographics_table$oplcat == 'mbo', ]$oplcat_re <- 'middle'
+demographics_table[demographics_table$oplcat == 'hbo', ]$oplcat_re <- 'high'
+demographics_table[demographics_table$oplcat == 'wo', ]$oplcat_re <- 'high'
+
+
+# Age categories
+nrow(demographics_table[demographics_table$lftdcat_re == '17 - 34 jaar',])
+nrow(demographics_table[demographics_table$lftdcat_re == '17 - 34 jaar',]) / nrow(demographics_table) * 100
+
+nrow(demographics_table[demographics_table$lftdcat_re == '35 - 54 jaar',])
+nrow(demographics_table[demographics_table$lftdcat_re == '35 - 54 jaar',]) / nrow(demographics_table) * 100
+
+nrow(demographics_table[demographics_table$lftdcat_re == '55 - 64 jaar',])
+nrow(demographics_table[demographics_table$lftdcat_re == '55 - 64 jaar',]) / nrow(demographics_table) * 100
+
+nrow(demographics_table[demographics_table$lftdcat_re == '65 - 89 jaar',])
+nrow(demographics_table[demographics_table$lftdcat_re == '65 - 89 jaar',]) / nrow(demographics_table) * 100
+
+# Gender
+nrow(demographics_table[demographics_table$geslacht == 'Man',])
+nrow(demographics_table[demographics_table$geslacht == 'Man',]) / nrow(demographics_table) * 100
+
+nrow(demographics_table[demographics_table$geslacht == 'Vrouw',])
+nrow(demographics_table[demographics_table$geslacht == 'Vrouw',]) / nrow(demographics_table) * 100
+
+# Education level
+nrow(demographics_table[demographics_table$oplcat_re == 'low',])
+nrow(demographics_table[demographics_table$oplcat_re == 'low',]) / nrow(demographics_table) * 100
+
+nrow(demographics_table[demographics_table$oplcat_re == 'middle',])
+nrow(demographics_table[demographics_table$oplcat_re == 'middle',]) / nrow(demographics_table) * 100
+
+nrow(demographics_table[demographics_table$oplcat_re == 'high',])
+nrow(demographics_table[demographics_table$oplcat_re == 'high',]) / nrow(demographics_table) * 100
+
 # Cronbach's
 participants <- unique(data_complete$nomem_encr)
 data_w1c <- filter(data_wave1, nomem_encr %in% participants)
@@ -1456,22 +1509,27 @@ test.ph
 
 corr_input <- data_complete[,c('PE_UTAUT', 'EE_UTAUT', 'FC_UTAUT', 'SI_UTAUT', 'HBM_PSus_self', 'HBM_PSev_self', 'HBM_selfefficacy_CoronaMelder', 'HBM_perceivedbenefits_CoronaMelder', 'HBM_barriers_CoronaMelder', 'Beliefs_monitoring', 'Beliefs_Conspiracy', 'Beliefs_fearB', 'Beliefs_Society', 'Beliefs_datasafety_5p', 'HBM_PSus_other2', 'HBM_PSev_other2', 'Beliefs_technologyperformance_5p')]
 
-corr_results <- cor(corr_input, method = "pearson")
+# Uses lsr library
+corr_results <- correlate(corr_input, corr.method = "spearman")
+corr_results2 <- cor(corr_input, method = "spearman")
+View(as.data.frame(corr_results['correlation']))
+options(scipen=999, digits=4)
+View(as.data.frame(corr_results['p.value']))
+View(corr_results2)
 
+nrow(data_complete[data_complete$wave_re == 6,])
 
-
-# 1. Inspecting the relationship between time points and the cloglog transformation of the observed hazards
-#    to determine the baseline hazard.
+# 1. Inspecting the relationship between time and the risk of encountering the event to determine the baseline hazard.
 
 data_complete %>%
-  group_by(month) %>%
+  group_by(wave_re) %>%
   summarise(event = sum(event),
             total = n()) %>%
   mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = hazard)) +
   geom_point() +
-  geom_smooth()
-
+  geom_smooth() +
+  ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + ylim(0, 1)
 
 data_complete %>%
   group_by(month) %>%
@@ -1480,24 +1538,12 @@ data_complete %>%
   mutate(hazard = event/total) %>%
   ggplot(aes(x = month, y = hazard)) +
   geom_point() +
-  geom_smooth()
+  geom_smooth(se=F) +
+  ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Maanden (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 19, by = 1))
 
-data_complete %>%
-  group_by(month) %>%
-  summarise(event = sum(event),
-            total = n()) %>%
-  mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = hazard)) +
-  geom_point() +
-  geom_smooth() + 
-  stat_smooth(method="lm", se=TRUE, fill=NA,
-                formula=y ~ poly(x, 4, raw=TRUE), colour="red")
+  #stat_smooth(method="lm", se=TRUE, fill=NA,
+  #              formula=y ~ poly(x, 4, raw=TRUE), colour="red")
 
-
-data_base <- data_complete %>%
-  group_by(month) %>%
-  summarise(event = sum(event),
-            total = n())
 
 data_base <- data_base[-c(5,7,8,9,10,11,13,14,15,17),]
 
@@ -1506,23 +1552,9 @@ data_base %>% mutate(hazard = event/total) %>%
   geom_point() +
   geom_smooth()
 
-ggplot(data_complete, aes(x = month, y = event)) + geom_smooth() + stat_smooth(method="lm", se=TRUE, fill=NA,
-                formula=y ~ poly(x, 4, raw=TRUE),colour="red")
-
-ggplot(data_complete, aes(x = wave_re, y = mean(event))) + geom_line() + stat_smooth(method="lm", se=TRUE, fill=NA,
-                formula=y ~ poly(x, 4, raw=TRUE),colour="red") + stat_smooth(method="lm", se=TRUE, fill=NA, formula=y ~ x, colour="blue")
-
-data_complete %>%
-  group_by(month) %>%
-  summarise(event = sum(event),
-            total = n()) %>%
-  mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = log(hazard/(1-hazard)))) + # log(-log(1-hazard)))) +
-  geom_point() +
-  geom_smooth()
 
 
-
+# Baseline model
 Gompertz_Model_Baseline <- glm(formula = event ~ month,
                                family = binomial(link = "logit"),
                                data = data_complete)
@@ -1674,8 +1706,7 @@ Pred_Dev_wave3
 # Version with a polynomial base hazard appears to have a better fit (lower AIC), so we might want to continue with that
 
 
-# 2. Include demographic predictors
-
+# Perform some recoding
 # Recode age categories into 17-34, 35-54, 55-64, 65-89 (cf. our previous paper)
 max(data_complete$leeftijd)
 data_complete$lftdcat_re <- NA
@@ -1697,6 +1728,18 @@ data_complete[data_complete$oplcat == 'hbo', ]$oplcat_re <- 'high'
 data_complete[data_complete$oplcat == 'wo', ]$oplcat_re <- 'high'
 data_complete$oplcat_re <- relevel(factor(data_complete$oplcat_re), ref = 'low')
 
+data_complete$HBM_PSus_other2 <- as.numeric(data_complete$HBM_PSus_other2)
+data_complete$HBM_PSev_other2 <- as.numeric(data_complete$HBM_PSev_other2)
+data_complete$Infectother <- as.numeric(data_complete$Infectother)
+data_complete$Infectother <- factor(data_complete$Infectother)
+data_complete$Infectother <- relevel(factor(data_complete$Infectother), ref = '0')
+
+data_complete$HBM_selfefficacy_CoronaMelder = as.numeric(data_complete$HBM_selfefficacy_CoronaMelder)
+data_complete$HBM_perceivedbenefits_CoronaMelder = as.numeric(data_complete$HBM_perceivedbenefits_CoronaMelder)
+data_complete$HBM_barriers_CoronaMelder = as.numeric(data_complete$HBM_barriers_CoronaMelder)
+
+
+# 2. Include demographic predictors
 data_complete %>%
   group_by(month, geslacht) %>%
   summarise(event = sum(event),
@@ -1741,6 +1784,10 @@ Model_poly_Demographics <- glm(formula = event ~ poly(month, 4, raw=TRUE) + gesl
                                family = binomial(link = "logit"),
                                data = data_complete)
 
+Model_Demographics_int <- glm(formula = event ~ poly(month, 4, raw=TRUE) + geslacht*poly(month,4,raw=TRUE) + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
 Model_wave_Demographics <- glm(formula = event ~ month + geslacht + lftdcat_re + oplcat_re,
                                family = binomial(link = "logit"),
                                data = data_complete)
@@ -1751,6 +1798,7 @@ anova(Model_poly_Demographics, Model_wave_Demographics, test ="Chisq")
 
 #summary(Gompertz_Model_Demographics)
 summary(Model_poly_Demographics)
+summary(Model_Demographics_int)
 
 summary(Model_wave_Demographics)
 
@@ -1811,7 +1859,10 @@ summary(Model_poly_UTAUT)
 
 #summ(Gompertz_Model_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
 summ(Model_poly_UTAUT, exp = T) #exp = T means that we want exponentiated estimates
+summ(Model_poly_Demographics, exp = T)
 
+anova(Model_poly_Demographics, Model_poly_UTAUT, test ="Chisq")
+anova(Gompertz_Model_nl_Baseline2, Model_poly_Demographics, test ="Chisq")
 
 # 4. Add HBM variables
 
@@ -1834,9 +1885,6 @@ data_complete %>%
   geom_point() +
   geom_smooth(method = "lm")
 
-
-data_complete$HBM_selfefficacy_CoronaMelder = as.numeric(data_complete$HBM_selfefficacy_CoronaMelder)
-
 data_complete %>%
   group_by(HBM_selfefficacy_CoronaMelder) %>%
   summarise(event = sum(event),
@@ -1846,9 +1894,6 @@ data_complete %>%
   geom_point() +
   geom_smooth(method = "lm")
 
-
-data_complete$HBM_perceivedbenefits_CoronaMelder = as.numeric(data_complete$HBM_perceivedbenefits_CoronaMelder)
-
 data_complete %>%
   group_by(HBM_perceivedbenefits_CoronaMelder) %>%
   summarise(event = sum(event),
@@ -1857,9 +1902,6 @@ data_complete %>%
   ggplot(aes(x = HBM_perceivedbenefits_CoronaMelder, y = hazard)) + #log(-log(1-hazard)))) +
   geom_point() +
   geom_smooth(method = "lm")
-
-
-data_complete$HBM_barriers_CoronaMelder = as.numeric(data_complete$HBM_barriers_CoronaMelder)
 
 data_complete %>%
   group_by(HBM_barriers_CoronaMelder) %>%
@@ -1887,7 +1929,7 @@ summary(Model_poly_HBM)
 #summ(Gompertz_Model_HBM, exp = T) #exp = T means that we want exponentiated estimates
 summ(Model_poly_HBM, exp = T) #exp = T means that we want exponentiated estimates
 
-
+anova(Model_poly_UTAUT, Model_poly_HBM, test ="Chisq")
 
 # 5. Add contextual variables
 data_complete %>%
@@ -1936,8 +1978,6 @@ data_complete %>%
   geom_smooth(method = "lm")
 
 
-data_complete$HBM_PSus_other2 <- as.numeric(data_complete$HBM_PSus_other2)
-
 data_complete %>%
   group_by(HBM_PSus_other2) %>%
   summarise(event = sum(event),
@@ -1946,8 +1986,6 @@ data_complete %>%
   ggplot(aes(x = HBM_PSus_other2, y = hazard)) + #log(-log(1-hazard)))) +
   geom_point() +
   geom_smooth(method = "lm")
-
-data_complete$HBM_PSev_other2 <- as.numeric(data_complete$HBM_PSev_other2)
 
 data_complete %>%
   group_by(HBM_PSev_other2) %>%
@@ -1967,8 +2005,6 @@ data_complete %>%
   geom_point() +
   geom_smooth(method = "lm")
 
-unique(data_wave1$Infectother)
-data_complete$Infectother <- as.numeric(data_complete$Infectother)
 
 # ===
 
@@ -2002,8 +2038,6 @@ data_complete %>%
   geom_point() +
   geom_smooth()
 
-
-data_complete$Infectother <- factor(data_complete$Infectother)
 
 data_complete %>%
   group_by(month, Infectother) %>%
@@ -2053,6 +2087,16 @@ Model_bla2 <- glm(formula = event ~ poly(wave,4,raw=TRUE) + PE_UTAUT + EE_UTAUT 
                                family = binomial(link = "logit"),
                                data = data_complete)
 
+Model_bla2 <- glm(formula = event ~ poly(month,4,raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring*month + Beliefs_Conspiracy*month + Beliefs_fearB*poly(month,4,raw=TRUE) + Beliefs_Society*month + Beliefs_datasafety_5p*month + HBM_PSus_other2*month + HBM_PSev_other2*month + Beliefs_technologyperformance_5p*month + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
+
+
+Model_month_Contextonly <- glm(formula = event ~ poly(month,4,raw=TRUE) + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re,
+                               family = binomial(link = "logit"),
+                               data = data_complete)
+
 
 #summary(Gompertz_Model_Context)
 #summary(Gompertz_Model_Context2)
@@ -2061,7 +2105,8 @@ summary(Model_poly_Context)
 summary(Model_wave_Context)
 summary(Model_month_Context)
 summary(Model_wave2_Context)
-summary(Model_bla)
+summary(Model_bla2)
+summary(Model_month_Contextonly)
 
 #summ(Gompertz_Model_Context, exp = T) #exp = T means that we want exponentiated estimates
 #summ(Gompertz_Model_Context2, exp = T) #exp = T means that we want exponentiated estimates
@@ -2070,8 +2115,8 @@ summ(Model_poly_Context, exp = T) #exp = T means that we want exponentiated esti
 summ(Model_month_Context, exp = T) #exp = T means that we want exponentiated estimates
 summ(Model_wave2_Context, exp = T) #exp = T means that we want exponentiated estimates
 summ(Model_bla2, exp = T)
-
-anova(Model_bla, Model_bla2, test ="Chisq")
+summ(Model_month_Contextonly, exp = T)
+anova(Model_poly_HBM, Model_poly_Context, test ="Chisq")
 
 
 # Plotting the survival curve
@@ -2110,6 +2155,13 @@ plot(Gompertz_Model_Baseline)
 
 
 # Plot: gender
+hazard <- data_complete %>%
+  group_by(wave_re, lftdcat_re) %>%
+  summarise(event = sum(event),
+         total = n()) %>%
+  mutate(hazard = event/total)
+
+
 data_complete %>%
   group_by(month, geslacht) %>%
   summarise(event = sum(event),
@@ -2120,44 +2172,57 @@ data_complete %>%
              col = geslacht)) +
   geom_point() +
   geom_smooth(se=F) + 
-  scale_colour_discrete(name = 'Gender', labels = c('Male', 'Female')) +
-  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+  scale_colour_discrete(name = 'Gender', labels = c('Man', 'Vrouw')) +
+  ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + ylim(0, 1)#scale_y_continuous(breaks = seq(0, 1, by = 0.1))
 
   data_complete %>%
-  group_by(month, event) %>%
+  #group_by(month, geslacht) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
   ggplot(aes(x = month, y = event, col = geslacht)) + #log(-log(1-hazard)))) +
   #geom_point() +
   geom_smooth(se=F) +
-  scale_colour_discrete(name = 'Gender', labels = c('Male', 'Female')) +
-  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+  scale_colour_discrete(name = 'Gender', labels = c('Man', 'Vrouw')) +
+  ylim(0, 1) + ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Maand (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 19, by = 2))
 
 # Plot: age
 data_complete %>%
-  group_by(month, lftdcat_re) %>%
+  group_by(wave_re, lftdcat_re) %>%
   summarise(event = sum(event),
          total = n()) %>%
   mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, 
+  ggplot(aes(x = wave_re, 
              y = hazard,#log(hazard/(1-hazard)),
              col = lftdcat_re)) +
   geom_point() +
-  geom_smooth() + #se=F, method = loess, method.args = list(family = "symmetric")) + 
+  #geom_line() + 
+  geom_smooth(se=F, method = loess) + #se=F, method = loess, method.args = list(family = "symmetric")) + 
   scale_colour_discrete(name = 'Age category (years)', labels = c('17-34', '35-54', '55-64', '65-89')) +
-  ylab('Hazard (chance of event)') + xlab ('Months of use')
+  ylab('Hazard (chance of event)') + xlab ('Months of use') + ylim(0,1)
 
   data_complete %>%
-  group_by(month, event) %>%
+  #group_by(month, event) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = event, col = lftdcat_re)) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = event, col = lftdcat_re)) + #log(-log(1-hazard)))) +
   #geom_point() +
   geom_smooth(se=F) +
-  scale_colour_discrete(name = 'Age category (years)', labels = c('17-34', '35-54', '55-64', '65-89')) +
-  ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months of use')
+  scale_colour_discrete(name = 'Leeftijdscategorie (jaren)', labels = c('17-34', '35-54', '55-64', '65-89')) +
+  ylim(0, 1) + ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1))
+  
+  data_complete %>%
+  #group_by(month, event) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = wave_re, y = event, col = lftdcat_re)) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Leeftijdscategorie (jaren)', labels = c('17-34', '35-54', '55-64', '65-89')) +
+  ylim(0, 1) + ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1))  
+
 
 # Plot: level of education
 data_complete %>%
@@ -2187,13 +2252,13 @@ data_complete %>%
   
 # UTAUT: PE  
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = PE_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = PE_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
   scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
   ylim(1, 7) + ylab('UTAUT: Performance expectancy') + xlab ('Months')
@@ -2367,13 +2432,13 @@ data_complete %>%
 
 # Context: Data safety
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = Beliefs_datasafety_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = Beliefs_datasafety_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
   scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
   ylim(1, 5) + ylab('Data safety') + xlab ('Months')
@@ -2381,13 +2446,13 @@ data_complete %>%
 
 # Context: Perceived susceptibility (others)
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_PSus_other2, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_PSus_other2, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
   scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
   ylim(1, 7) + ylab('Perceived susceptibility (others)') + xlab ('Months')
@@ -2395,13 +2460,13 @@ data_complete %>%
 
 # Context: Perceived severity (others)
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_PSev_other2, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_PSev_other2, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
   scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
   ylim(1, 7) + ylab('Perceived severity (others)') + xlab ('Months')
@@ -2422,11 +2487,11 @@ data_complete %>%
 
 # Context: Others infected
   data_complete %>%
-  group_by(month, event) %>%
-  #summarise(event = sum(event),
-  #          total = n()) %>%
-  #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = event, col = Infectother)) + #log(-log(1-hazard)))) +
+  group_by(wave_re, Infectother) %>%
+  summarise(event = sum(event),
+            total = n()) %>%
+  mutate(hazard = event/total) %>%
+  ggplot(aes(x = wave_re, y = hazard, col = Infectother)) + #log(-log(1-hazard)))) +
   #geom_point() +
   geom_smooth(se=F) +
   scale_colour_discrete(name = 'Others infected?', labels = c('No', 'Yes')) +
