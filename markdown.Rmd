@@ -1585,7 +1585,6 @@ data_base %>% mutate(hazard = event/total) %>%
   geom_point() +
   geom_smooth()
 
-
 # Attrition curve and 'usage half-life' (cf. Eysenbach, 2005)
 attrition_curves = data.frame(unique(data_complete$month))
 attrition_curves$dropout <- NA
@@ -2290,6 +2289,17 @@ data_complete %>%
   scale_colour_discrete(name = 'Gender', labels = c('Man', 'Vrouw')) +
   ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + ylim(0, 100)#scale_y_continuous(breaks = seq(0, 1, by = 0.1))
   
+  
+  data_complete %>%
+  #group_by(month, event) %>%
+  #summarise(event = sum(event),
+  #          total = n()) %>%
+  #mutate(hazard = event/total) %>%
+  ggplot(aes(x = wave_re, y = event, col = lftdcat_re)) + #log(-log(1-hazard)))) +
+  #geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Leeftijdscategorie (jaren)', labels = c('17-34', '35-54', '55-64', '65-89')) +
+  ylim(0, 1) + ylab('Kans dat iemand stopt met gebruiken CoronaMelder') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1))
   
   data_complete %>%
   #group_by(month, event) %>%
