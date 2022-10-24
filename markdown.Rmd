@@ -1529,6 +1529,47 @@ for (row in 1:nrow(num_rightcensored)) {
 num_rightcensored_endstudy <- num_rightcensored[num_rightcensored$last_wave != 6,]
 
 
+# Graph with participants and how their status changed through the six waves
+status_overview <- data.frame(nomem_encr = unique(data_complete$nomem_encr), wave = 1)
+status_overview <- rbind(status_overview, data.frame(nomem_encr = unique(data_complete$nomem_encr), wave = 2))
+status_overview <- rbind(status_overview, data.frame(nomem_encr = unique(data_complete$nomem_encr), wave = 3))
+status_overview <- rbind(status_overview, data.frame(nomem_encr = unique(data_complete$nomem_encr), wave = 4))
+status_overview <- rbind(status_overview, data.frame(nomem_encr = unique(data_complete$nomem_encr), wave = 5))
+status_overview <- rbind(status_overview, data.frame(nomem_encr = unique(data_complete$nomem_encr), wave = 6))
+
+status_overview$status <- NA
+
+# Status can be:
+# 1. Did not start using app yet
+# 2. Using app
+# 3. Former user of app
+# 4. Quit the study
+
+for (row in 1:nrow(status_overview)) {
+  if (min(data_complete[data_complete$nomem_encr == status_overview[row,]$nomem_encr,]$wave) > status_overview[row,]$wave) {
+    status_overview[row,]$status = 'not_start'
+  }
+  else if (max(data_complete[data_complete$nomem_encr == status_overview[row,]$nomem_encr,]$wave) < status_overview[row,]$wave) {
+    if (max(data_complete[data_complete$nomem_encr == status_overview[row,]$nomem_encr,]$event) == 1) {
+      status_overview[row,]$status = 'former_user'
+    }
+    else {
+      status_overview[row,]$status = 'dropout'
+    }
+  }
+  else {
+    if (data_complete[data_complete$nomem_encr == status_overview[row,]$nomem_encr & data_complete$wave == status_overview[row,]$wave,]$event == 1) {
+      status_overview[row,]$status = 'former_user'
+    }
+    else {
+      status_overview[row,]$status = 'user'
+    }
+  }
+}
+
+status_overview %>% group_by(status, wave) %>% summarise(total = n() / 762 * 100) %>% ggplot(aes(fill=status, y = total, x = wave)) + geom_bar(position="stack", stat="identity",width = 0.5) + scale_fill_discrete(name = 'Status', labels = c('Gestopt met de studie', 'Voormalig gebruiker', 'Nog niet gestart met gebruik', 'Huidig gebruiker'), type=c('#4D4C4C', '#F8766D', '#9B9B9B', '#619CFF')) +
+  ylab('Percentage van de steekproef (n = 762)') + xlab ('Wave') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20))
+
 
 # Survival analysis
 
@@ -2371,174 +2412,237 @@ data_complete %>%
   #geom_point() +
   geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('UTAUT: Performance expectancy') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('UTAUT: Verwachte effectiviteit') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
 
+mean(data_complete[data_complete$event == 1,]$PE_UTAUT)
+sd(data_complete[data_complete$event == 1,]$PE_UTAUT)
+mean(data_complete[data_complete$event == 0,]$PE_UTAUT)
+sd(data_complete[data_complete$event == 0,]$PE_UTAUT)
 
 # UTAUT: EE 
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = EE_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = EE_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('UTAUT: Effort expectancy') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('UTAUT: Inspanningsverwachting') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$EE_UTAUT)
+sd(data_complete[data_complete$event == 1,]$EE_UTAUT)
+mean(data_complete[data_complete$event == 0,]$EE_UTAUT)
+sd(data_complete[data_complete$event == 0,]$EE_UTAUT)
 
 
 # UTAUT: FC 
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = FC_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = FC_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('UTAUT: Facilitating conditions') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('UTAUT: Faciliterende omstandigheden') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$FC_UTAUT)
+sd(data_complete[data_complete$event == 1,]$FC_UTAUT)
+mean(data_complete[data_complete$event == 0,]$FC_UTAUT)
+sd(data_complete[data_complete$event == 0,]$FC_UTAUT)
 
 
 # UTAUT: SI 
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = SI_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = SI_UTAUT, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('UTAUT: Social influence') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('UTAUT: Sociale invloed') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$SI_UTAUT)
+sd(data_complete[data_complete$event == 1,]$SI_UTAUT)
+mean(data_complete[data_complete$event == 0,]$SI_UTAUT)
+sd(data_complete[data_complete$event == 0,]$SI_UTAUT)
 
 
 # HBM: Perceived susceptibility 
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_PSus_self, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_PSus_self, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('HBM: Perceived susceptibility') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('HBM: Vatbaarheid') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
 
+mean(data_complete[data_complete$event == 1,]$HBM_PSus_self)
+sd(data_complete[data_complete$event == 1,]$HBM_PSus_self)
+mean(data_complete[data_complete$event == 0,]$HBM_PSus_self)
+sd(data_complete[data_complete$event == 0,]$HBM_PSus_self)
 
 # HBM: Perceived severity 
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_PSev_self, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_PSev_self, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('HBM: Perceived severity') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('HBM: Ernst van de besmetting') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
 
+mean(data_complete[data_complete$event == 1,]$HBM_PSev_self)
+sd(data_complete[data_complete$event == 1,]$HBM_PSev_self)
+mean(data_complete[data_complete$event == 0,]$HBM_PSev_self)
+sd(data_complete[data_complete$event == 0,]$HBM_PSev_self)
 
 # HBM: Self-efficacy 
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_selfefficacy_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_selfefficacy_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('HBM: Self-efficacy') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('HBM: Zelfeffectiviteit') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
 
+mean(data_complete[data_complete$event == 1,]$HBM_selfefficacy_CoronaMelder)
+sd(data_complete[data_complete$event == 1,]$HBM_selfefficacy_CoronaMelder)
+mean(data_complete[data_complete$event == 0,]$HBM_selfefficacy_CoronaMelder)
+sd(data_complete[data_complete$event == 0,]$HBM_selfefficacy_CoronaMelder)
 
 # HBM: Perceived benefits
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_perceivedbenefits_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_perceivedbenefits_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('HBM: Perceived benefits') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('HBM: Gepercipieerde voordelen') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$HBM_perceivedbenefits_CoronaMelder)
+sd(data_complete[data_complete$event == 1,]$HBM_perceivedbenefits_CoronaMelder)
+mean(data_complete[data_complete$event == 0,]$HBM_perceivedbenefits_CoronaMelder)
+sd(data_complete[data_complete$event == 0,]$HBM_perceivedbenefits_CoronaMelder)
 
 
 # HBM: Perceived barriers
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = HBM_barriers_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = HBM_barriers_CoronaMelder, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('HBM: Perceived barriers') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('HBM: Gepercipieerde barrières') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$HBM_barriers_CoronaMelder)
+sd(data_complete[data_complete$event == 1,]$HBM_barriers_CoronaMelder)
+mean(data_complete[data_complete$event == 0,]$HBM_barriers_CoronaMelder)
+sd(data_complete[data_complete$event == 0,]$HBM_barriers_CoronaMelder)
 
 
 # Context: Monitoring beliefs
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = Beliefs_monitoring, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = Beliefs_monitoring, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 5) + ylab('Monitoring beliefs') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Overtuigingen over toezicht') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$Beliefs_monitoring)
+sd(data_complete[data_complete$event == 1,]$Beliefs_monitoring)
+mean(data_complete[data_complete$event == 0,]$Beliefs_monitoring)
+sd(data_complete[data_complete$event == 0,]$Beliefs_monitoring)
 
 
 # Context: Conspiracy beliefs
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = Beliefs_Conspiracy, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = Beliefs_Conspiracy, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 5) + ylab('Conspiracy beliefs') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Complottheorieën') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$Beliefs_Conspiracy)
+sd(data_complete[data_complete$event == 1,]$Beliefs_Conspiracy)
+mean(data_complete[data_complete$event == 0,]$Beliefs_Conspiracy)
+sd(data_complete[data_complete$event == 0,]$Beliefs_Conspiracy)
 
 # Context: Fear beliefs
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = Beliefs_fearB, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = Beliefs_fearB, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('Fear beliefs') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Angstovertuigingen') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$Beliefs_fearB)
+sd(data_complete[data_complete$event == 1,]$Beliefs_fearB)
+mean(data_complete[data_complete$event == 0,]$Beliefs_fearB)
+sd(data_complete[data_complete$event == 0,]$Beliefs_fearB)
+
 
 # Context: Societal beliefs
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = Beliefs_Society, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = Beliefs_Society, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('Societal beliefs') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Maatschappelijke overtuigingen') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$Beliefs_Society)
+sd(data_complete[data_complete$event == 1,]$Beliefs_Society)
+mean(data_complete[data_complete$event == 0,]$Beliefs_Society)
+sd(data_complete[data_complete$event == 0,]$Beliefs_Society)
+
 
 
 # Context: Data safety
@@ -2550,10 +2654,16 @@ data_complete %>%
   ggplot(aes(x = wave_re, y = Beliefs_datasafety_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
   geom_smooth(method=loess) +
-  #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 5) + ylab('Data safety') + xlab ('Months')
+  #geom_line() +
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Dataveiligheid') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 5), breaks = seq(1, 5, by = 1))
 
+mean(data_complete[data_complete$event == 1,]$Beliefs_datasafety_5p)
+sd(data_complete[data_complete$event == 1,]$Beliefs_datasafety_5p)
+mean(data_complete[data_complete$event == 0,]$Beliefs_datasafety_5p)
+sd(data_complete[data_complete$event == 0,]$Beliefs_datasafety_5p)
+
+  
 
 # Context: Perceived susceptibility (others)
 data_complete %>%
@@ -2565,8 +2675,13 @@ data_complete %>%
   #geom_point() +
   geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('Perceived susceptibility (others)') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Vatbaarheid van anderen') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$HBM_PSus_other2)
+sd(data_complete[data_complete$event == 1,]$HBM_PSus_other2)
+mean(data_complete[data_complete$event == 0,]$HBM_PSus_other2)
+sd(data_complete[data_complete$event == 0,]$HBM_PSus_other2)
 
 
 # Context: Perceived severity (others)
@@ -2579,22 +2694,33 @@ data_complete %>%
   #geom_point() +
   geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 7) + ylab('Perceived severity (others)') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Ernst van de besmetting voor anderen') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 7), breaks = seq(1, 7, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$HBM_PSev_other2)
+sd(data_complete[data_complete$event == 1,]$HBM_PSev_other2)
+mean(data_complete[data_complete$event == 0,]$HBM_PSev_other2)
+sd(data_complete[data_complete$event == 0,]$HBM_PSev_other2)
 
 
 # Context: Technology beliefs
 data_complete %>%
-  group_by(month, as.factor(event)) %>%
+  group_by(wave_re, as.factor(event)) %>%
   #summarise(event = sum(event),
   #          total = n()) %>%
   #mutate(hazard = event/total) %>%
-  ggplot(aes(x = month, y = Beliefs_technologyperformance_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
+  ggplot(aes(x = wave_re, y = Beliefs_technologyperformance_5p, col = as.factor(event))) + #log(-log(1-hazard)))) +
   #geom_point() +
-  geom_smooth() +
+  geom_smooth(method=loess) +
   #geom_line() + 
-  scale_colour_discrete(name = 'Status', labels = c('App user', 'Stopped using')) +
-  ylim(1, 5) + ylab('Technology beliefs') + xlab ('Months')
+  scale_colour_discrete(name = 'Status', labels = c('Gebruiker', 'Gestopt met gebruiken'), type=c('#619CFF', '#F8766D')) +
+  ylab('Adequaatheid van de techniek') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(1, 5), breaks = seq(1, 5, by = 1))
+
+mean(data_complete[data_complete$event == 1,]$Beliefs_technologyperformance_5p)
+sd(data_complete[data_complete$event == 1,]$Beliefs_technologyperformance_5p)
+mean(data_complete[data_complete$event == 0,]$Beliefs_technologyperformance_5p)
+sd(data_complete[data_complete$event == 0,]$Beliefs_technologyperformance_5p)
+
 
 # Context: Others infected
   data_complete %>%
@@ -2607,6 +2733,27 @@ data_complete %>%
   geom_smooth(se=F) +
   scale_colour_discrete(name = 'Others infected?', labels = c('No', 'Yes')) +
   ylim(0, 1) + ylab('Hazard (chance of event)') + xlab ('Months')
+  
+  
+  data_complete %>%
+  group_by(wave_re, Infectother) %>%
+  summarise(event = sum(event),
+            total = n(), hazard = event/total*100) %>%
+  ggplot(aes(x = wave_re, y = hazard, col = Infectother)) + #log(-log(1-hazard)))) +
+  geom_point() +
+  geom_smooth(se=F) +
+  scale_colour_discrete(name = 'Naasten geïnfecteerd', labels = c('Nee', 'Ja')) +
+  ylim(0, 100) + ylab('Kans dat iemand stopt met gebruiken CoronaMelder (%)') + xlab ('Wave (1 = begin gebruik CoronaMelder)') + scale_x_continuous(breaks = seq(1, 6, by = 1))
+
+hazard <- data_complete %>%
+  group_by(wave_re, Infectother) %>% summarise(mean(event))
+
+mean(hazard[hazard$Infectother == '1',]$`mean(event)`)
+sd(hazard[hazard$Infectother == '1',]$`mean(event)`) 
+mean(hazard[hazard$Infectother == '0',]$`mean(event)`)
+sd(hazard[hazard$Infectother == '0',]$`mean(event)`) 
+
+    
 
  ```
 ```{=openxml}
