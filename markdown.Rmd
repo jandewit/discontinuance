@@ -120,7 +120,7 @@ hist(data_wave1$HBM_PSev_self)
 
 # The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
 data_wave1$Beliefs_datasafetyn <- as.numeric(data_wave1$Beliefs_datasafety)
-data_wave1$Beliefs_datasafety_5p <- car::recode(data_wave1$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+data_wave1$Beliefs_datasafety_5p <- car::recode(data_wave1$Beliefs_datasafetyn, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 bla <- data.frame(levels = unique(data_wave1$Beliefs_datasafety), value = as.numeric(unique(data_wave1$Beliefs_datasafety)))
 
@@ -284,7 +284,7 @@ hist(data_wave2$HBM_PSev_self)
 
 # The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
 data_wave2$Beliefs_datasafetyn <- as.numeric(data_wave2$Beliefs_datasafety)
-data_wave2$Beliefs_datasafety_5p <- car::recode(data_wave2$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+data_wave2$Beliefs_datasafety_5p <- car::recode(data_wave2$Beliefs_datasafetyn, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 bla <- data.frame(levels = unique(data_wave2$Beliefs_datasafety), value = as.numeric(unique(data_wave2$Beliefs_datasafety)))
 
@@ -453,7 +453,7 @@ hist(data_wave3$HBM_PSev_self)
 
 # The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
 data_wave3$Beliefs_datasafetyn <- as.numeric(data_wave3$Beliefs_datasafety)
-data_wave3$Beliefs_datasafety_5p <- car::recode(data_wave3$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+data_wave3$Beliefs_datasafety_5p <- car::recode(data_wave3$Beliefs_datasafetyn, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 bla <- data.frame(levels = unique(data_wave3$Beliefs_datasafety), value = as.numeric(unique(data_wave3$Beliefs_datasafety)))
 
@@ -615,7 +615,7 @@ hist(data_wave4$HBM_PSev_self)
 
 # The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
 data_wave4$Beliefs_datasafetyn <- as.numeric(data_wave4$Beliefs_datasafety)
-data_wave4$Beliefs_datasafety_5p <- car::recode(data_wave4$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+data_wave4$Beliefs_datasafety_5p <- car::recode(data_wave4$Beliefs_datasafetyn, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 bla <- data.frame(levels = unique(data_wave4$Beliefs_datasafety), value = as.numeric(unique(data_wave4$Beliefs_datasafety)))
 
@@ -777,7 +777,7 @@ hist(data_wave5$HBM_PSev_self)
 
 # The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
 data_wave5$Beliefs_datasafetyn <- as.numeric(data_wave5$Beliefs_datasafety)
-data_wave5$Beliefs_datasafety_5p <- car::recode(data_wave5$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+data_wave5$Beliefs_datasafety_5p <- car::recode(data_wave5$Beliefs_datasafetyn, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 bla <- data.frame(levels = unique(data_wave5$Beliefs_datasafety), value = as.numeric(unique(data_wave5$Beliefs_datasafety)))
 
@@ -939,7 +939,7 @@ hist(data_wave6$HBM_PSev_self)
 
 # The variables measured from not true - true (5 point scales with 'I don't know as answer options) are recoded, so that 'I don't know' represents the middle value. This should also be recoded, as more data safety is fewer concerns.
 data_wave6$Beliefs_datasafetyn <- as.numeric(data_wave6$Beliefs_datasafety)
-data_wave6$Beliefs_datasafety_5p <- car::recode(data_wave6$Beliefs_datasafetyn, '1=5; 2=4; 3=2; 4=1; 5=3') 
+data_wave6$Beliefs_datasafety_5p <- car::recode(data_wave6$Beliefs_datasafetyn, '1=1; 2=2; 3=4; 4=5; 5=3') 
 
 bla <- data.frame(levels = unique(data_wave6$Beliefs_datasafety), value = as.numeric(unique(data_wave6$Beliefs_datasafety)))
 
@@ -1610,6 +1610,161 @@ for (row in 1:nrow(status_overview)) {
   }
 }
 
+# From user in w1 to former user in w2
+nrow(status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'user',])
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w1 to never used in w2 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w1 to stopped study in w2
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From never used in w1 to user in w2
+nrow(status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'never_used',])
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w1 to former user in w2
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w1 to stopped study in w2
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From former user in w1 to user in w2
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w1 to never used in w2 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w1 to stopped study in w2
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 1 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+
+
+# From user in w2 to former user in w3
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'user',])
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w2 to never used in w3 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w2 to stopped study in w3
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From never used in w2 to user in w3
+nrow(status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'never_used',])
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w2 to former user in w3
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w2 to stopped study in w3
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From former user in w2 to user in w3
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w2 to never used in w3 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w1 to stopped study in w2
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 2 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+
+
+# From user in w3 to former user in w4
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'user',])
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w3 to never used in w4 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w3 to stopped study in w4
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From never used in w3 to user in w4
+nrow(status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'never_used',])
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w3 to former user in w4
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w3 to stopped study in w4
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From former user in w3 to user in w4
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w3 to never used in w4 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w3 to stopped study in w4
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 3 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+
+
+# From user in w4 to former user in w5
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'user',])
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w4 to never used in w5 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w4 to stopped study in w5
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From never used in w4 to user in w5
+nrow(status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'never_used',])
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w4 to former user in w5
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w4 to stopped study in w5
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From former user in w4 to user in w5
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w4 to never used in w5 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w4 to stopped study in w5
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 4 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+
+
+# From user in w5 to former user in w6
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'user',])
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w5 to never used in w6 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From user in w5 to stopped study in w6
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'user',]$nomem_encr,])
+
+# From never used in w5 to user in w6
+nrow(status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'never_used',])
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w5 to former user in w6
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'former_user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From never used in w5 to stopped study in w6
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'never_used',]$nomem_encr,])
+
+# From former user in w5 to user in w6
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'user' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w5 to never used in w6 (this should not happen)
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'never_used' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+# From former user in w5 to stopped study in w6
+nrow(status_all_overview[status_all_overview$wave == 6 & status_all_overview$status == 'dropout' & status_all_overview$nomem_encr %in% status_all_overview[status_all_overview$wave == 5 & status_all_overview$status == 'former_user',]$nomem_encr,])
+
+
+
 status_overview %>% group_by(status, wave) %>% summarise(total = n() / 762 * 100) %>% ggplot(aes(fill=status, y = total, x = wave)) + geom_bar(position="stack", stat="identity",width = 0.5) + scale_fill_discrete(name = 'Status', labels = c('Gestopt met de studie', 'Voormalig gebruiker', 'Nog niet gestart met gebruik', 'Huidig gebruiker'), type=c('#4D4C4C', '#F8766D', '#9B9B9B', '#619CFF')) +
   ylab('Percentage van de steekproef (n = 762)') + xlab ('Wave') + scale_x_continuous(breaks = seq(1, 6, by = 1)) + scale_y_continuous(limits = c(0, 100), breaks = seq(0, 100, by = 20))
 
@@ -2254,6 +2409,19 @@ summ(Model_month_Contextonly, exp = T)
 summ(Model_poly_HBMonly, exp = T)
 anova(Model_poly_HBM, Model_poly_Context, test ="Chisq")
 
+
+library(lme4)
+# Frailty model (multilevel discrete-time survival analysis) where every individual has their own hazard function (random intercept term)
+Model_Multi <- glmer(formula = event ~ poly(month, 4, raw=TRUE) + PE_UTAUT + EE_UTAUT + FC_UTAUT + SI_UTAUT + HBM_PSus_self + HBM_PSev_self + HBM_selfefficacy_CoronaMelder + HBM_perceivedbenefits_CoronaMelder + HBM_barriers_CoronaMelder + Beliefs_monitoring + Beliefs_Conspiracy + Beliefs_fearB + Beliefs_Society + Beliefs_datasafety_5p + HBM_PSus_other2 + HBM_PSev_other2 + Beliefs_technologyperformance_5p + Infectother + geslacht + lftdcat_re + oplcat_re + (1|nomem_encr),
+                     family = binomial(logit),
+                     data = data_complete, nAGQ=0)
+                     #,
+                     #control = glmerControl(optimizer = "bobyqa", 
+                     #                       optCtrl = list(maxfun = 2e5)))
+
+
+summary(Model_Multi)
+summ(Model_Multi, exp = T)
 
 # Plotting the survival curve
 plot(Gompertz_Model_Baseline)
